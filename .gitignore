@@ -1,0 +1,27 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Django
+*.log
+*.pot
+*.py[cod]
+*.egg-info/
+*.egg
+staticfiles/
+media/
+
+# Virtual Environments
+venv/
+env/
+.env
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
