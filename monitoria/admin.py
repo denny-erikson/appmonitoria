@@ -8,9 +8,25 @@ admin.site.register(BankAccount)
 admin.site.register(Document)
 admin.site.register(Uniform)
 admin.site.register(Product)
-admin.site.register(Event)
-admin.site.register(Team)
 admin.site.register(Resort)
 admin.site.register(Availability)
 admin.site.register(Cancellation)
 admin.site.register(Payment)
+
+class TeamInline(admin.StackedInline):
+    model = Team
+    extra = 0 
+
+class EventAdmin(admin.ModelAdmin):
+    inlines = [TeamInline]
+
+admin.site.register(Event, EventAdmin)
+
+class AvailabilityInline(admin.TabularInline):
+    model = Availability
+    extra = 0
+
+class TeamAdmin(admin.ModelAdmin):
+    inlines = [AvailabilityInline]
+
+admin.site.register(Team, TeamAdmin)
