@@ -9,9 +9,8 @@ admin.site.register(Document)
 admin.site.register(Uniform)
 admin.site.register(Product)
 admin.site.register(Resort)
-admin.site.register(Availability)
-admin.site.register(Cancellation)
 admin.site.register(Payment)
+admin.site.register(Cancellation)
 
 class TeamInline(admin.StackedInline):
     model = Team
@@ -30,3 +29,13 @@ class TeamAdmin(admin.ModelAdmin):
     inlines = [AvailabilityInline]
 
 admin.site.register(Team, TeamAdmin)
+
+class CancellationInline(admin.TabularInline):
+    model = Cancellation
+    extra = 0  # Não exibe formulários vazios adicionais
+
+class AvailabilityAdmin(admin.ModelAdmin):
+    list_display = ('profile', 'status', 'summoned', 'team')
+    inlines = [CancellationInline]
+
+admin.site.register(Availability, AvailabilityAdmin)
