@@ -122,17 +122,17 @@ class Availability(models.Model):
     cancellation = models.ForeignKey('Cancellation', on_delete=models.SET_NULL, blank=True, null=True, related_name='availabilities')
 
     def cancel(self, reason):
-        """Cancela a disponibilidade e registra o motivo."""
-        print("""Cancela a disponibilidade e registra o motivo.""")
-        cancellation = Cancellation.objects.create(reason=reason, availability=self)
-        self.cancellation = cancellation
-        self.status = False 
-        self.save()
+        """Cancela a disponibilidade e registra o motivo, se ainda não foi cancelado."""
+        if not self.cancellation:
+            cancellation = Cancellation.objects.create(reason=reason, availability=self)
+            self.cancellation = cancellation
+            self.status = False
+            self.summoned = False
+            self.save()
 
     def __str__(self):
         return f"{self.profile.name} está {'disponível' if self.status else 'indisponível'}"
 
-    
 class Cancellation(models.Model):
     reason = models.CharField(max_length=255)
     availability = models.ForeignKey(Availability, on_delete=models.CASCADE, related_name='cancellations', blank=True, null=True)

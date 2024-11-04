@@ -10,7 +10,7 @@ admin.site.register(Uniform)
 admin.site.register(Product)
 admin.site.register(Resort)
 admin.site.register(Payment)
-admin.site.register(Cancellation)
+
 
 class TeamInline(admin.StackedInline):
     model = Team
@@ -39,3 +39,13 @@ class AvailabilityAdmin(admin.ModelAdmin):
     inlines = [CancellationInline]
 
 admin.site.register(Availability, AvailabilityAdmin)
+
+class CancellationAdmin(admin.ModelAdmin):
+    list_display = ('reason', 'availability')
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj.availability:
+            obj.availability.cancel(obj.reason)
+
+admin.site.register(Cancellation, CancellationAdmin)
