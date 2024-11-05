@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from django.shortcuts import render
 
@@ -6,6 +7,8 @@ from events.serializers import AvailabilitySerializer, CancellationSerializer, E
 
 
 class EventViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 

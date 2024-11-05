@@ -45,7 +45,23 @@ INSTALLED_APPS = [
     'events',
     'rest_framework',
     'graphene_django',
+    'rest_framework_simplejwt',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+# from datetime import timedelta
+
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+#     'ROTATE_REFRESH_TOKENS': True,
+#     'BLACKLIST_AFTER_ROTATION': True,
+# }
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -61,12 +77,20 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'appmonitoria.urls'
+INSTALLED_APPS += ['graphql_jwt']
+
 GRAPHENE = {
     'SCHEMA': 'appmonitoria.schema.schema',
     'MIDDLEWARE': [
-        'graphene_django.debug.DjangoDebugMiddleware',
+        # 'graphene_django.debug.DjangoDebugMiddleware',
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
     ]
 }
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 
 TEMPLATES = [

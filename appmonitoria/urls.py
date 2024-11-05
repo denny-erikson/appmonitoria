@@ -23,6 +23,11 @@ from django.conf.urls.static import static
 from graphene_django.views import GraphQLView
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 from events.views import AvailabilityViewSet, CancellationViewSet, EventViewSet, ProductViewSet, ResortViewSet, TeamViewSet
 from monitoria.views import (
     AddressViewSet, BankAccountViewSet, DocumentsViewSet, LocationViewSet,
@@ -52,6 +57,8 @@ router.register(r'resorts', ResortViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
 ]
 
