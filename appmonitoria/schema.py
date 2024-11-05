@@ -1,6 +1,9 @@
 import graphene
 from graphene_django.types import DjangoObjectType
+
 from users.models import CustomUser, Profile
+from events.models import Availability, Event
+
 
 # Definindo tipos GraphQL para CustomUser e Profile
 class UserType(DjangoObjectType):
@@ -13,11 +16,23 @@ class ProfileType(DjangoObjectType):
         model = Profile
         fields = ('id', 'name', 'cpf', 'photo', 'created_at', 'updated_at', 'user')
 
+class EventType(DjangoObjectType):
+    class Meta:
+        model = Event
+        fields = '__all__'
+
+class AvailabilityType(DjangoObjectType):
+    class Meta:
+        model = Availability
+        fields = '__all__'
+
 # Definindo as Queries
 class Query(graphene.ObjectType):
     all_users = graphene.List(UserType)
     user_by_id = graphene.Field(UserType, id=graphene.Int())
     all_profiles = graphene.List(ProfileType)
+    all_events = graphene.List(EventType)
+    all_availability = graphene.List(AvailabilityType)
 
     def resolve_all_users(root, info):
         return CustomUser.objects.all()
@@ -27,6 +42,12 @@ class Query(graphene.ObjectType):
 
     def resolve_all_profiles(root, info):
         return Profile.objects.all()
+    
+    def resolve_all_events(root, info):
+        return Event.objects.all()
+    
+    def resolve_all_availability(root, info):
+        return Availability.objects.all()
 
 # Mutations para criar ou atualizar usuários (opcional)
 class CreateUser(graphene.Mutation):
