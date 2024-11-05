@@ -1,14 +1,10 @@
 from rest_framework import viewsets
 from .models import (
-    Address, BankAccount, Document, Location, Uniform, Product,
-    Event, Team, Resort, Availability, Cancellation, Payment
+    Address, BankAccount, Document, Location, Uniform, Payment
 )
 from .serializers import (
     AddressSerializer, BankAccountSerializer, DocumentsSerializer, LocationSerializer,
-    UniformSerializer,
-    ProductSerializer, EventSerializer, TeamSerializer,
-    ResortSerializer, AvailabilitySerializer, CancellationSerializer,
-    PaymentSerializer
+    UniformSerializer, PaymentSerializer
 )
 
 class LocationViewSet(viewsets.ModelViewSet):
@@ -30,30 +26,6 @@ class DocumentsViewSet(viewsets.ModelViewSet):
 class UniformViewSet(viewsets.ModelViewSet):
     queryset = Uniform.objects.all()
     serializer_class = UniformSerializer
-
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-class EventViewSet(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-
-class TeamViewSet(viewsets.ModelViewSet):
-    queryset = Team.objects.all()
-    serializer_class = TeamSerializer
-
-class ResortViewSet(viewsets.ModelViewSet):
-    queryset = Resort.objects.all()
-    serializer_class = ResortSerializer
-
-class AvailabilityViewSet(viewsets.ModelViewSet):
-    queryset = Availability.objects.all()
-    serializer_class = AvailabilitySerializer
-
-class CancellationViewSet(viewsets.ModelViewSet):
-    queryset = Cancellation.objects.all()
-    serializer_class = CancellationSerializer
 
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()

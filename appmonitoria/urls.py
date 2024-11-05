@@ -23,11 +23,10 @@ from django.conf.urls.static import static
 from graphene_django.views import GraphQLView
 from django.views.decorators.csrf import csrf_exempt
 
+from events.views import AvailabilityViewSet, CancellationViewSet, EventViewSet, ProductViewSet, ResortViewSet, TeamViewSet
 from monitoria.views import (
     AddressViewSet, BankAccountViewSet, DocumentsViewSet, LocationViewSet,
-    UniformViewSet, ProductViewSet, EventViewSet, TeamViewSet,
-    ResortViewSet, AvailabilityViewSet, CancellationViewSet,
-    PaymentViewSet
+    UniformViewSet, PaymentViewSet
 )
 
 router = DefaultRouter()
@@ -40,13 +39,15 @@ router.register(r'addresses', AddressViewSet)
 router.register(r'bank_accounts', BankAccountViewSet)
 router.register(r'Document', DocumentsViewSet)
 router.register(r'Uniform', UniformViewSet)
-router.register(r'products', ProductViewSet)
+router.register(r'payments', PaymentViewSet)
+
 router.register(r'events', EventViewSet)
 router.register(r'teams', TeamViewSet)
-router.register(r'resorts', ResortViewSet)
 router.register(r'availabilities', AvailabilityViewSet)
 router.register(r'cancellations', CancellationViewSet)
-router.register(r'payments', PaymentViewSet)
+router.register(r'products', ProductViewSet)
+router.register(r'resorts', ResortViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Cancellation
+
+from events.models import Cancellation
 
 @receiver(post_save, sender=Cancellation)
 def cancelar_disponibilidade(sender, instance, created, **kwargs):
