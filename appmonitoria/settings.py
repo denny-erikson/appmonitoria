@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users', 
     'monitoria',
+    'events',
     'rest_framework',
     'graphene_django',
 ]

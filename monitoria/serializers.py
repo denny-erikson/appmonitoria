@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import (
-    Address, BankAccount, Document, Location, Uniform, Product,
-    Event, Team, Resort, Availability, Cancellation, Payment
+    Address, BankAccount, Document, Location, Uniform, Payment
 )
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -29,35 +28,6 @@ class UniformSerializer(serializers.ModelSerializer):
         model = Uniform
         fields = '__all__'
 
-class ProductSerializer(serializers.ModelSerializer):  
-    class Meta:
-        model = Product
-        fields = '__all__'
-
-class EventSerializer(serializers.ModelSerializer): 
-    class Meta:
-        model = Event
-        fields = '__all__'
-
-class TeamSerializer(serializers.ModelSerializer): 
-    class Meta:
-        model = Team
-        fields = '__all__'
-
-class ResortSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Resort
-        fields = '__all__'
-
-class AvailabilitySerializer(serializers.ModelSerializer): 
-    class Meta:
-        model = Availability
-        fields = '__all__'
-
-class CancellationSerializer(serializers.ModelSerializer): 
-    class Meta:
-        model = Cancellation
-        fields = '__all__'
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
