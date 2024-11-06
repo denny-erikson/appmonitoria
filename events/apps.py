@@ -5,6 +5,6 @@ class EventsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'events'
 
-    # def ready(self):
-    #     # Importa os sinais para registrá-los
-    #     import events.signals
+    def ready(self):
+        # Importa os sinais para registrá-los
+        import events.signals
