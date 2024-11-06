@@ -37,9 +37,4 @@ admin.site.register(Availability, AvailabilityAdmin)
 class CancellationAdmin(admin.ModelAdmin):
     list_display = ('reason', 'availability')
 
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        if obj.availability:
-            obj.availability.cancel(obj.reason)
-
 admin.site.register(Cancellation, CancellationAdmin)

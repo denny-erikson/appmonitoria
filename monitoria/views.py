@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from .models import (
-    Address, BankAccount, Document, Location, Uniform, Payment
+    Address, BankAccount, Category, Document, Location, Uniform, Payment
 )
 from .serializers import (
-    AddressSerializer, BankAccountSerializer, DocumentsSerializer, LocationSerializer,
+    AddressSerializer, BankAccountSerializer, CategorySerializer, DocumentsSerializer, LocationSerializer,
     UniformSerializer, PaymentSerializer
 )
 
@@ -30,3 +30,7 @@ class UniformViewSet(viewsets.ModelViewSet):
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer

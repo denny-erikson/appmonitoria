@@ -1,5 +1,7 @@
+import graphql_jwt
 import graphene
 from graphene_django.types import DjangoObjectType
+from graphql_jwt.decorators import login_required
 
 from users.models import CustomUser, Profile
 from events.models import Availability, Event
@@ -43,6 +45,7 @@ class Query(graphene.ObjectType):
     def resolve_all_profiles(root, info):
         return Profile.objects.all()
     
+    @login_required
     def resolve_all_events(root, info):
         return Event.objects.all()
     
@@ -63,6 +66,9 @@ class CreateUser(graphene.Mutation):
         return CreateUser(user=user)
 
 class Mutation(graphene.ObjectType):
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
     create_user = CreateUser.Field()
 
 # Definindo o schema completo com Query e Mutation

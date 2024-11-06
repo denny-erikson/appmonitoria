@@ -83,9 +83,37 @@ class Uniform(models.Model):
 
 
 class Payment(models.Model):
+    STATUS_CHOICES = [
+        ('PAID', 'Paid'),
+        ('PENDING', 'Pending'),
+        ('CANCELED', 'Canceled'),
+    ]
+    
     event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
 
-    def __decimal__(self):
-        return self.amount
+    def __str__(self):
+        return f"{self.profile} - {self.event} - {self.get_status_display()} - {self.amount}"
+    
+
+PROFICIENCY_CHOICES = [
+    ('B', 'Básico'),
+    ('I', 'Intermediário'),
+    ('A', 'Avançado'),
+    ('F', 'Fluente'),
+    ('N', 'Nativo'),
+]
+
+class Category(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
+    title= models.CharField(max_length=50, blank=True, null=True)
+    proficiency = models.CharField(max_length=2, blank=True, null=True, help_text="Select a proficiency", choices=PROFICIENCY_CHOICES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)])
+
+    def __str__(self):
+        return self.title
+
+
