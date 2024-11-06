@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import (
-    Address, BankAccount, Document, Location, Uniform, Payment
+    Address, BankAccount, Category, Document, Location, Uniform, Payment
 )
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -32,4 +32,9 @@ class UniformSerializer(serializers.ModelSerializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
+        fields = '__all__'
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
         fields = '__all__'

@@ -89,3 +89,23 @@ class Payment(models.Model):
 
     def __decimal__(self):
         return self.amount
+
+PROFICIENCY_CHOICES = [
+    ('B', 'Básico'),
+    ('I', 'Intermediário'),
+    ('A', 'Avançado'),
+    ('F', 'Fluente'),
+    ('N', 'Nativo'),
+]
+
+class Category(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
+    title= models.CharField(max_length=50, blank=True, null=True)
+    proficiency = models.CharField(max_length=2, blank=True, null=True, help_text="Select a proficiency", choices=PROFICIENCY_CHOICES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)])
+
+    def __str__(self):
+        return self.title
+
+
