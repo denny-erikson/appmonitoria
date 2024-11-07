@@ -148,15 +148,31 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',  # Usando um formato personalizado
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'DEBUG',  # Nível de log ajustado para capturar mais informações
+        },
+        'myapp': {  # Definindo um logger específico para sua aplicação
+            'handlers': ['console'],
+            'level': 'INFO',  # Exibe apenas logs de nível INFO ou superior
+        },
+    },
+    'formatters': {
+        'verbose': {  # Define o formato do log
+            'format': '{levelname} {asctime} {module} {message}',  # Exemplo de formato
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
         },
     },
 }
+
 
 
 

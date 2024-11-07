@@ -33,14 +33,14 @@ class Team(models.Model):
 
 
 class Availability(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, blank=True, null=True)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="availabilities", blank=True, null=True)
     status = models.BooleanField(default=False)
     summoned = models.BooleanField(default=False)
     cancellation = models.ForeignKey('Cancellation', on_delete=models.SET_NULL, blank=True, null=True, related_name='availabilities')
 
     def __str__(self):
-        return f"{self.profile.name} está {'disponível' if self.status else 'indisponível'}"
+        return f"{self.team.name} - {self.profile.name} está {'disponível' if self.status else 'indisponível'}"
 
 class Cancellation(models.Model):
     reason = models.CharField(max_length=255)

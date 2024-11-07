@@ -107,7 +107,6 @@ PROFICIENCY_CHOICES = [
 ]
 
 class Category(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
     title= models.CharField(max_length=50, blank=True, null=True)
     proficiency = models.CharField(max_length=2, blank=True, null=True, help_text="Select a proficiency", choices=PROFICIENCY_CHOICES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

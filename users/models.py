@@ -2,6 +2,7 @@ import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class Role(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50)
@@ -51,6 +52,8 @@ class Profile(models.Model):
     code_nr = models.CharField(max_length=50, blank=True, null=True)
     code_senior = models.CharField(max_length=50, blank=True, null=True)
 
+    category = models.ForeignKey("monitoria.Category", on_delete=models.SET_NULL, related_name="profiles", blank=True, null=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
