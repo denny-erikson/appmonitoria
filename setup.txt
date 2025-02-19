@@ -1,0 +1,13 @@
+#Build containers
+docker-compose up --build
+
+# Run migrated
+docker-compose exec web python manage.py migrate
+
+# Create root user
+docker-compose exec web python manage.py createsuperuser
+
+# Populate fake users
+docker-compose exec web python populate.py
+
+# Access http://localhost:8000/admin
