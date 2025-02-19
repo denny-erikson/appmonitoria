@@ -18,4 +18,7 @@ python manage.py migrate
 REM Criar superusuário
 python manage.py createsuperuser
 
+REM Rodar o script de popular o banco
+python populate.py
+
 pause
