@@ -1,11 +1,9 @@
 from decimal import Decimal
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from decimal import Decimal
-
 import logging
 
-from events.models import Availability, Cancellation, Team
+from events.models import Availability, Cancellation, Team, Event
 from monitoria.models import Category, Payment
 
 logger = logging.getLogger(__name__)
@@ -31,9 +29,6 @@ def cancel_availability(sender, instance, created, **kwargs):
             logger.warning("No payment found for the specified profile, team, and event.")
         except Payment.MultipleObjectsReturned:
             logger.error("Multiple payments found for the specified profile, team, and event.")
-
-
-
 
 @receiver(post_save, sender=Team)
 def create_payments_for_team(sender, instance, **kwargs):
@@ -68,8 +63,6 @@ def create_payments_for_team(sender, instance, **kwargs):
                 logger.error("Categoria associada ao perfil não encontrada.")
             except Exception as e:
                 logger.error(f"Erro ao calcular pagamento: {e}")
-
-
 
 @receiver(post_save, sender=Availability)
 def create_payment_for_resurrected_availability(sender, instance, **kwargs):
@@ -113,7 +106,6 @@ def create_payment_for_resurrected_availability(sender, instance, **kwargs):
         except Exception as e:
             logger.error(f"Erro ao calcular pagamento: {e}")
 
-
 @receiver(post_delete, sender=Availability)
 def remove_payment_for_deleted_availability(sender, instance, **kwargs):
     """Remove o pagamento associado ao Availability quando ele for excluído."""
@@ -128,4 +120,13 @@ def remove_payment_for_deleted_availability(sender, instance, **kwargs):
     
     except Exception as e:
         logger.error(f"Erro ao tentar remover o pagamento: {e}")
+
+@receiver(post_save, sender=Team)
+def set_availability_status_on_team_close(sender, instance, **kwargs):
+    """Define o status de todas as disponibilidades associadas como False quando o time for encerrado."""
+    if instance.status:
+        availabilities = Availability.objects.filter(team=instance)
+        for availability in availabilities:
+            availability.status = False
+            availability.save()
 
