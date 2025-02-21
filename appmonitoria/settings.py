@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'graphene_django',
     'rest_framework_simplejwt',
+    "corsheaders",
 ]
 
 REST_FRAMEWORK = {
@@ -68,6 +69,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,6 +78,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Permitir todas as origens (Apenas para desenvolvimento, NÃO faça isso em produção)
+CORS_ALLOW_ALL_ORIGINS = True 
+
+# OU permitir apenas seu frontend React
+#CORS_ALLOWED_ORIGINS = [
+#   "http://localhost:3000",  # Endereço do frontend React
+#]
+
+# Permitir headers personalizados
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'appmonitoria.urls'
 INSTALLED_APPS += ['graphql_jwt']
