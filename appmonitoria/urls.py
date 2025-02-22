@@ -53,7 +53,6 @@ router.register(r'cancellations', CancellationViewSet)
 router.register(r'products', ProductViewSet)
 router.register(r'resorts', ResortViewSet)
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
@@ -63,6 +62,5 @@ urlpatterns = [
     path('events/', include('events.urls')),
 ]
 
-# Servir arquivos de mídia durante o desenvolvimento
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, Documents_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

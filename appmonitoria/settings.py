@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
-import logging
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +33,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    # Seus apps instalados
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +45,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'graphene_django',
     'rest_framework_simplejwt',
-    "corsheaders",
+    'corsheaders',
+    'graphql_jwt',
 ]
 
 REST_FRAMEWORK = {
@@ -56,20 +55,11 @@ REST_FRAMEWORK = {
     ),
 }
 
-# from datetime import timedelta
-
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-#     'ROTATE_REFRESH_TOKENS': True,
-#     'BLACKLIST_AFTER_ROTATION': True,
-# }
-
 AUTH_USER_MODEL = 'users.CustomUser'
 
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -79,6 +69,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 # Permitir todas as origens (Apenas para desenvolvimento, NÃO faça isso em produção)
 CORS_ALLOW_ALL_ORIGINS = True 
 
@@ -87,18 +79,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 #   "http://localhost:3000",  # Endereço do frontend React
 #]
 
-# Permitir headers personalizados
-CORS_ALLOW_CREDENTIALS = True
-
 ROOT_URLCONF = 'appmonitoria.urls'
-INSTALLED_APPS += ['graphql_jwt']
 
 GRAPHENE = {
     'SCHEMA': 'appmonitoria.schema.schema',
     'MIDDLEWARE': [
-        # 'graphene_django.debug.DjangoDebugMiddleware',
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
-    ]
+    ],
 }
 
 AUTHENTICATION_BACKENDS = [
@@ -128,13 +115,6 @@ WSGI_APPLICATION = 'appmonitoria.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
 
 DATABASES = {
     'default': dj_database_url.config(
@@ -168,22 +148,22 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',  # Usando um formato personalizado
+            'formatter': 'verbose',
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',  # Nível de log ajustado para capturar mais informações
+            'level': 'DEBUG',
         },
-        'myapp': {  # Definindo um logger específico para sua aplicação
+        'myapp': {
             'handlers': ['console'],
-            'level': 'INFO',  # Exibe apenas logs de nível INFO ou superior
+            'level': 'INFO',
         },
     },
     'formatters': {
-        'verbose': {  # Define o formato do log
-            'format': '{levelname} {asctime} {module} {message}',  # Exemplo de formato
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
             'style': '{',
         },
         'simple': {
