@@ -59,6 +59,7 @@ class Query(graphene.ObjectType):
     )
     total_events = graphene.Int()
     all_availability = graphene.List(AvailabilityType)
+    event_by_id = graphene.Field(EventType, id=graphene.ID(required=True))
 
     def resolve_all_users(root, info):
         return CustomUser.objects.all()
@@ -117,6 +118,13 @@ class Query(graphene.ObjectType):
 
     def resolve_all_availability(root, info):
         return Availability.objects.all()
+
+    @login_required
+    def resolve_event_by_id(root, info, id):
+        try:
+            return Event.objects.get(pk=id)
+        except Event.DoesNotExist:
+            return None
 
 # Mutations para criar ou atualizar usuários (opcional)
 class CreateUser(graphene.Mutation):
