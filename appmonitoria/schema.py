@@ -28,10 +28,23 @@ class ProfileType(DjangoObjectType):
     def resolve_rating_distribution(self, info):
         return self.get_rating_distribution()
 
+class RatingType(DjangoObjectType):
+    score_display = graphene.String()
+
+    class Meta:
+        model = Rating
+        fields = ('id', 'profile', 'event', 'score', 'description', 
+                 'created_at', 'updated_at', 'created_by')
+
+    def resolve_score_display(self, info):
+        return self.score_display
+
 class EventType(DjangoObjectType):
+    ratings_by_event = graphene.List(RatingType)
+
     class Meta:
         model = Event
-        fields = ('id', 'name', 'start_date', 'end_date', 'daily', 'resort')
+        fields = ('id', 'name', 'start_date', 'end_date', 'daily', 'resort', 'ratings')
 
     # Convertendo snake_case para camelCase para seguir convenções GraphQL
     start_date = graphene.String()
@@ -43,6 +56,9 @@ class EventType(DjangoObjectType):
     def resolve_end_date(self, info):
         return self.end_date.isoformat() if self.end_date else None
 
+    def resolve_ratings_by_event(self, info):
+        return self.ratings.all()
+
 class AvailabilityType(DjangoObjectType):
     class Meta:
         model = Availability
@@ -52,17 +68,6 @@ class EventPaginationType(graphene.ObjectType):
     items = graphene.List(EventType)
     total_count = graphene.Int()
     has_next_page = graphene.Boolean()
-
-class RatingType(DjangoObjectType):
-    score_display = graphene.String()
-
-    class Meta:
-        model = Rating
-        fields = ('id', 'profile', 'event', 'score', 'description', 
-                 'created_at', 'updated_at', 'created_by')
-
-    def resolve_score_display(self, info):
-        return self.score_display
 
 # Definindo as Queries
 class Query(graphene.ObjectType):
