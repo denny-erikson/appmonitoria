@@ -5,6 +5,7 @@ from graphql_jwt.decorators import login_required
 
 from users.models import CustomUser, Profile
 from events.models import Availability, Event
+from monitoria.models import Rating
 
 
 # Definindo tipos GraphQL para CustomUser e Profile
@@ -14,9 +15,18 @@ class UserType(DjangoObjectType):
         fields = ('id', 'username', 'email', 'roles', 'created_at', 'updated_at')
 
 class ProfileType(DjangoObjectType):
+    rating_stats = graphene.Field(graphene.JSONString)
+    rating_distribution = graphene.Field(graphene.JSONString)
+
     class Meta:
         model = Profile
-        fields = ('id', 'name', 'cpf', 'photo', 'created_at', 'updated_at', 'user')
+        fields = ('id', 'name', 'cpf', 'photo', 'created_at', 'updated_at', 'user', 'ratings')
+
+    def resolve_rating_stats(self, info):
+        return self.get_rating_stats()
+
+    def resolve_rating_distribution(self, info):
+        return self.get_rating_distribution()
 
 class EventType(DjangoObjectType):
     class Meta:
@@ -43,6 +53,17 @@ class EventPaginationType(graphene.ObjectType):
     total_count = graphene.Int()
     has_next_page = graphene.Boolean()
 
+class RatingType(DjangoObjectType):
+    score_display = graphene.String()
+
+    class Meta:
+        model = Rating
+        fields = ('id', 'profile', 'event', 'score', 'description', 
+                 'created_at', 'updated_at', 'created_by')
+
+    def resolve_score_display(self, info):
+        return self.score_display
+
 # Definindo as Queries
 class Query(graphene.ObjectType):
     all_users = graphene.List(UserType)
@@ -60,6 +81,22 @@ class Query(graphene.ObjectType):
     total_events = graphene.Int()
     all_availability = graphene.List(AvailabilityType)
     event_by_id = graphene.Field(EventType, id=graphene.ID(required=True))
+    ratings_by_event = graphene.List(
+        RatingType, 
+        event_id=graphene.ID(required=True)
+    )
+    ratings_by_profile = graphene.List(
+        RatingType, 
+        profile_id=graphene.ID(required=True)
+    )
+    rating_by_id = graphene.Field(
+        RatingType, 
+        id=graphene.ID(required=True)
+    )
+    user_profile = graphene.Field(
+        ProfileType,
+        id=graphene.ID(required=True)
+    )
 
     def resolve_all_users(root, info):
         return CustomUser.objects.all()
@@ -126,6 +163,28 @@ class Query(graphene.ObjectType):
         except Event.DoesNotExist:
             return None
 
+    @login_required
+    def resolve_ratings_by_event(root, info, event_id):
+        return Rating.objects.filter(event_id=event_id)
+
+    @login_required
+    def resolve_ratings_by_profile(root, info, profile_id):
+        return Rating.objects.filter(profile_id=profile_id)
+
+    @login_required
+    def resolve_rating_by_id(root, info, id):
+        try:
+            return Rating.objects.get(pk=id)
+        except Rating.DoesNotExist:
+            return None
+
+    @login_required
+    def resolve_user_profile(root, info, id):
+        try:
+            return Profile.objects.get(pk=id)
+        except Profile.DoesNotExist:
+            return None
+
 # Mutations para criar ou atualizar usuários (opcional)
 class CreateUser(graphene.Mutation):
     user = graphene.Field(UserType)
@@ -139,11 +198,92 @@ class CreateUser(graphene.Mutation):
         user.save()
         return CreateUser(user=user)
 
+# Mutations para Rating
+class CreateRating(graphene.Mutation):
+    class Arguments:
+        profile_id = graphene.ID(required=True)
+        event_id = graphene.ID(required=True)
+        score = graphene.Int(required=True)
+        description = graphene.String(required=True)
+
+    rating = graphene.Field(RatingType)
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    @login_required
+    def mutate(self, info, profile_id, event_id, score, description):
+        try:
+            # Verificar se já existe uma avaliação
+            existing_rating = Rating.objects.filter(
+                profile_id=profile_id,
+                event_id=event_id
+            ).exists()
+
+            if existing_rating:
+                return CreateRating(
+                    success=False,
+                    message="Já existe uma avaliação para este perfil neste evento"
+                )
+
+            rating = Rating.objects.create(
+                profile_id=profile_id,
+                event_id=event_id,
+                score=score,
+                description=description,
+                created_by=info.context.user
+            )
+            
+            return CreateRating(
+                rating=rating,
+                success=True,
+                message="Avaliação criada com sucesso"
+            )
+        except Exception as e:
+            return CreateRating(
+                success=False,
+                message=str(e)
+            )
+
+class UpdateRating(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+        score = graphene.Int()
+        description = graphene.String()
+
+    rating = graphene.Field(RatingType)
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    @login_required
+    def mutate(self, info, id, score=None, description=None):
+        try:
+            rating = Rating.objects.get(pk=id)
+            
+            if score is not None:
+                rating.score = score
+            if description is not None:
+                rating.description = description
+                
+            rating.save()
+            
+            return UpdateRating(
+                rating=rating,
+                success=True,
+                message="Avaliação atualizada com sucesso"
+            )
+        except Rating.DoesNotExist:
+            return UpdateRating(
+                success=False,
+                message="Avaliação não encontrada"
+            )
+
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
     create_user = CreateUser.Field()
+    create_rating = CreateRating.Field()
+    update_rating = UpdateRating.Field()
 
 # Definindo o schema completo com Query e Mutation
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -116,3 +116,34 @@ class Category(models.Model):
         return self.title
 
 
+class Rating(models.Model):
+    RATING_CHOICES = [
+        (1, '1 - Insatisfatório'),
+        (2, '2 - Regular'),
+        (3, '3 - Bom'),
+        (4, '4 - Muito Bom'),
+        (5, '5 - Excelente'),
+    ]
+
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='ratings')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='ratings')
+    score = models.IntegerField(
+        choices=RATING_CHOICES, 
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='ratings_given')
+
+    class Meta:
+        unique_together = ['profile', 'event']
+
+    def __str__(self):
+        return f"Avaliação de {self.profile.name} no evento {self.event.name}: {self.score}"
+
+    @property
+    def score_display(self):
+        return dict(self.RATING_CHOICES)[self.score]
+
+

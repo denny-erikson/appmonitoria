@@ -1,6 +1,7 @@
 import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Avg, Count
 
 
 class Role(models.Model):
@@ -59,3 +60,25 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_rating_stats(self):
+        """Retorna estatísticas das avaliações do perfil"""
+        stats = self.ratings.aggregate(
+            average_score=Avg('score'),
+            total_ratings=Count('id')
+        )
+        return {
+            'average_score': round(stats['average_score'] or 0, 2),
+            'total_ratings': stats['total_ratings']
+        }
+
+    def get_rating_distribution(self):
+        """Retorna a distribuição das avaliações por pontuação"""
+        distribution = {}
+        for score, label in Rating.RATING_CHOICES:
+            count = self.ratings.filter(score=score).count()
+            distribution[score] = {
+                'count': count,
+                'label': label
+            }
+        return distribution
