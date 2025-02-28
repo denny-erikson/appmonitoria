@@ -4,7 +4,7 @@ from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import login_required
 
 from users.models import CustomUser, Profile
-from events.models import Availability, Event
+from events.models import Availability, Event, Team
 from monitoria.models import Rating
 
 
@@ -62,6 +62,11 @@ class EventType(DjangoObjectType):
 class AvailabilityType(DjangoObjectType):
     class Meta:
         model = Availability
+        fields = '__all__'
+
+class TeamType(DjangoObjectType):
+    class Meta:
+        model = Team
         fields = '__all__'
 
 class EventPaginationType(graphene.ObjectType):
@@ -282,6 +287,109 @@ class UpdateRating(graphene.Mutation):
                 message="Avaliação não encontrada"
             )
 
+class CreateTeam(graphene.Mutation):
+    class Arguments:
+        event_id = graphene.ID(required=True)
+        name = graphene.String(required=True)
+        max_availabilities = graphene.Int()
+
+    team = graphene.Field(TeamType)
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    @login_required
+    def mutate(self, info, event_id, name, max_availabilities=20):
+        try:
+            event = Event.objects.get(pk=event_id)
+            team = Team.objects.create(
+                event=event,
+                name=name,
+                max_availabilities=max_availabilities
+            )
+            return CreateTeam(
+                team=team,
+                success=True,
+                message="Time criado com sucesso"
+            )
+        except Exception as e:
+            return CreateTeam(
+                success=False,
+                message=str(e)
+            )
+
+class CreateAvailability(graphene.Mutation):
+    class Arguments:
+        team_id = graphene.ID(required=True)
+        profile_id = graphene.ID(required=True)
+
+    availability = graphene.Field(AvailabilityType)
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    @login_required
+    def mutate(self, info, team_id, profile_id):
+        try:
+            team = Team.objects.get(pk=team_id)
+            profile = Profile.objects.get(pk=profile_id)
+
+            # Verificar se já existe disponibilidade
+            if Availability.objects.filter(team=team, profile=profile).exists():
+                return CreateAvailability(
+                    success=False,
+                    message="Você já se inscreveu neste time"
+                )
+
+            # Verificar se o time está fechado
+            if team.status:
+                return CreateAvailability(
+                    success=False,
+                    message="Este time não está mais aceitando inscrições"
+                )
+
+            availability = Availability.objects.create(
+                team=team,
+                profile=profile,
+                status=True
+            )
+            
+            return CreateAvailability(
+                availability=availability,
+                success=True,
+                message="Inscrição realizada com sucesso"
+            )
+        except Exception as e:
+            return CreateAvailability(
+                success=False,
+                message=str(e)
+            )
+
+class UpdateAvailabilitySummoned(graphene.Mutation):
+    class Arguments:
+        availability_id = graphene.ID(required=True)
+        summoned = graphene.Boolean(required=True)
+
+    availability = graphene.Field(AvailabilityType)
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    @login_required
+    def mutate(self, info, availability_id, summoned):
+        try:
+            availability = Availability.objects.get(pk=availability_id)
+            availability.summoned = summoned
+            availability.save()
+            
+            return UpdateAvailabilitySummoned(
+                availability=availability,
+                success=True,
+                message="Status de convocação atualizado com sucesso"
+            )
+        except Exception as e:
+            return UpdateAvailabilitySummoned(
+                success=False,
+                message=str(e)
+            )
+
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
@@ -289,6 +397,9 @@ class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
     create_rating = CreateRating.Field()
     update_rating = UpdateRating.Field()
+    create_team = CreateTeam.Field()
+    create_availability = CreateAvailability.Field()
+    update_availability_summoned = UpdateAvailabilitySummoned.Field()
 
 # Definindo o schema completo com Query e Mutation
 schema = graphene.Schema(query=Query, mutation=Mutation)
