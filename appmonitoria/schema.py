@@ -14,9 +14,15 @@ class UserType(DjangoObjectType):
         model = CustomUser
         fields = ('id', 'username', 'email', 'roles', 'created_at', 'updated_at')
 
+class AvailabilityType(DjangoObjectType):
+    class Meta:
+        model = Availability
+        fields = '__all__'
+
 class ProfileType(DjangoObjectType):
     rating_stats = graphene.Field(graphene.JSONString)
     rating_distribution = graphene.Field(graphene.JSONString)
+    availabilities = graphene.List(AvailabilityType)
 
     class Meta:
         model = Profile
@@ -27,6 +33,9 @@ class ProfileType(DjangoObjectType):
 
     def resolve_rating_distribution(self, info):
         return self.get_rating_distribution()
+
+    def resolve_availabilities(self, info):
+        return Availability.objects.filter(profile=self)
 
 class RatingType(DjangoObjectType):
     score_display = graphene.String()
@@ -59,15 +68,19 @@ class EventType(DjangoObjectType):
     def resolve_ratings_by_event(self, info):
         return self.ratings.all()
 
-class AvailabilityType(DjangoObjectType):
-    class Meta:
-        model = Availability
-        fields = '__all__'
-
 class TeamType(DjangoObjectType):
+    members_count = graphene.Int()
+    availabilities = graphene.List(AvailabilityType)
+
     class Meta:
         model = Team
-        fields = '__all__'
+        fields = ('id', 'name', 'event', 'status', 'max_availabilities', 'availabilities')
+
+    def resolve_members_count(self, info):
+        return self.availabilities.filter(status=True).count()
+
+    def resolve_availabilities(self, info):
+        return self.availabilities.all()
 
 class EventPaginationType(graphene.ObjectType):
     items = graphene.List(EventType)
@@ -89,7 +102,19 @@ class Query(graphene.ObjectType):
         order_by=graphene.String()
     )
     total_events = graphene.Int()
-    all_availability = graphene.List(AvailabilityType)
+    all_teams = graphene.List(
+        TeamType,
+        event_id=graphene.ID()
+    )
+    team_by_id = graphene.Field(
+        TeamType,
+        id=graphene.ID(required=True)
+    )
+    all_availability = graphene.List(
+        AvailabilityType,
+        team_id=graphene.ID(),
+        profile_id=graphene.ID()
+    )
     event_by_id = graphene.Field(EventType, id=graphene.ID(required=True))
     ratings_by_event = graphene.List(
         RatingType, 
@@ -107,6 +132,7 @@ class Query(graphene.ObjectType):
         ProfileType,
         id=graphene.ID(required=True)
     )
+    my_profile = graphene.Field(ProfileType)
 
     def resolve_all_users(root, info):
         return CustomUser.objects.all()
@@ -117,7 +143,7 @@ class Query(graphene.ObjectType):
     def resolve_all_profiles(root, info):
         return Profile.objects.all()
     
-    @login_required
+
     def resolve_all_events(root, info, offset=None, limit=None, name=None, 
                          start_date=None, end_date=None, order_by=None):
         # Começamos com todos os eventos
@@ -163,8 +189,28 @@ class Query(graphene.ObjectType):
     def resolve_total_events(root, info):
         return Event.objects.count()
 
-    def resolve_all_availability(root, info):
-        return Availability.objects.all()
+    #@login_required
+    def resolve_all_teams(root, info, event_id=None):
+        queryset = Team.objects.all()
+        if event_id:
+            queryset = queryset.filter(event_id=event_id)
+        return queryset
+
+  
+    def resolve_team_by_id(root, info, id):
+        try:
+            return Team.objects.get(pk=id)
+        except Team.DoesNotExist:
+            return None
+
+    @login_required
+    def resolve_all_availability(root, info, team_id=None, profile_id=None):
+        queryset = Availability.objects.all()
+        if team_id:
+            queryset = queryset.filter(team_id=team_id)
+        if profile_id:
+            queryset = queryset.filter(profile_id=profile_id)
+        return queryset
 
     @login_required
     def resolve_event_by_id(root, info, id):
@@ -192,6 +238,13 @@ class Query(graphene.ObjectType):
     def resolve_user_profile(root, info, id):
         try:
             return Profile.objects.get(pk=id)
+        except Profile.DoesNotExist:
+            return None
+
+    @login_required
+    def resolve_my_profile(root, info):
+        try:
+            return Profile.objects.get(user=info.context.user)
         except Profile.DoesNotExist:
             return None
 
@@ -390,6 +443,34 @@ class UpdateAvailabilitySummoned(graphene.Mutation):
                 message=str(e)
             )
 
+class CreateProfile(graphene.Mutation):
+    class Arguments:
+        name = graphene.String(required=True)
+        cpf = graphene.String(required=True)
+
+    profile = graphene.Field(ProfileType)
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    @login_required
+    def mutate(self, info, name, cpf):
+        try:
+            profile = Profile.objects.create(
+                user=info.context.user,
+                name=name,
+                cpf=cpf
+            )
+            return CreateProfile(
+                profile=profile,
+                success=True,
+                message="Perfil criado com sucesso"
+            )
+        except Exception as e:
+            return CreateProfile(
+                success=False,
+                message=str(e)
+            )
+
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
@@ -400,6 +481,7 @@ class Mutation(graphene.ObjectType):
     create_team = CreateTeam.Field()
     create_availability = CreateAvailability.Field()
     update_availability_summoned = UpdateAvailabilitySummoned.Field()
+    create_profile = CreateProfile.Field()
 
 # Definindo o schema completo com Query e Mutation
 schema = graphene.Schema(query=Query, mutation=Mutation)
