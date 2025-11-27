@@ -15,6 +15,10 @@ from .views import (
     ProductDetailView,
     ProductCreateView,
     ProductUpdateView,
+    ResortListView,
+    ResortDetailView,
+    ResortCreateView,
+    ResortUpdateView,
 )
 
 app_name = "events"
@@ -38,5 +42,9 @@ urlpatterns = [
     path("products/new/", ProductCreateView.as_view(), name="product_create"),
     path("products/<int:pk>/", ProductDetailView.as_view(), name="product_detail"),
     path("products/<int:pk>/edit/", ProductUpdateView.as_view(), name="product_edit"),
+    path("resorts/", ResortListView.as_view(), name="resort_list"),
+    path("resorts/new/", ResortCreateView.as_view(), name="resort_create"),
+    path("resorts/<int:pk>/", ResortDetailView.as_view(), name="resort_detail"),
+    path("resorts/<int:pk>/edit/", ResortUpdateView.as_view(), name="resort_edit"),
     path('event_wizard/', EventWizard.as_view(), name='event_wizard'),
 ]

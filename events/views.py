@@ -280,6 +280,63 @@ class ProductUpdateView(View):
         return render(request, self.template_name, {"form": form, "product": product})
 
 
+class ResortListView(ListView):
+    template_name = "events/resort_list.html"
+    context_object_name = "resorts"
+
+    def get_queryset(self):
+        return Resort.objects.prefetch_related("events").all().order_by("name")
+
+
+class ResortDetailView(DetailView):
+    template_name = "events/resort_detail.html"
+    context_object_name = "resort"
+    model = Resort
+
+    def get_queryset(self):
+        return Resort.objects.prefetch_related("events")
+
+
+class ResortCreateView(View):
+    template_name = "events/resort_form.html"
+
+    def get(self, request):
+        from .forms import ResortForm
+
+        form = ResortForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        from .forms import ResortForm
+
+        form = ResortForm(request.POST)
+        if form.is_valid():
+            resort = form.save()
+            return redirect("events:resort_detail", pk=resort.pk)
+        return render(request, self.template_name, {"form": form})
+
+
+class ResortUpdateView(View):
+    template_name = "events/resort_form.html"
+
+    def get(self, request, pk):
+        from .forms import ResortForm
+
+        resort = get_object_or_404(Resort, pk=pk)
+        form = ResortForm(instance=resort)
+        return render(request, self.template_name, {"form": form, "resort": resort})
+
+    def post(self, request, pk):
+        from .forms import ResortForm
+
+        resort = get_object_or_404(Resort, pk=pk)
+        form = ResortForm(request.POST, instance=resort)
+        if form.is_valid():
+            form.save()
+            return redirect("events:resort_detail", pk=resort.pk)
+        return render(request, self.template_name, {"form": form, "resort": resort})
+
+
 class EventPaymentReportView(View):
     template_name = "events/event_payments_report.html"
 
