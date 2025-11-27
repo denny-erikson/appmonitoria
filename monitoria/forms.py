@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Category, Payment, Rating, Document, BankAccount, Uniform
+from .models import Category, Payment, Rating, Document, BankAccount, Uniform, Address, Location
 
 
 class PaymentStatusForm(forms.ModelForm):
@@ -120,6 +120,27 @@ class BankAccountForm(forms.ModelForm):
             "account_agency": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
             "account_number": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
             "key_pix": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+        }
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ["user", "address", "number", "neighborhood", "location"]
+        widgets = {
+            "user": forms.Select(
+                attrs={
+                    "class": "w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                }
+            ),
+            "address": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "number": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "neighborhood": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "location": forms.Select(
+                attrs={
+                    "class": "w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                }
+            ),
         }
 
 

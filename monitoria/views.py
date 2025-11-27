@@ -133,6 +133,45 @@ class BankAccountUpdateView(UpdateView):
         return BankAccountForm
 
 
+class AddressListView(ListView):
+    template_name = "monitoria/address_list.html"
+    context_object_name = "addresses"
+
+    def get_queryset(self):
+        return Address.objects.select_related("user", "location").order_by("user__username")
+
+
+class AddressDetailView(DetailView):
+    template_name = "monitoria/address_detail.html"
+    context_object_name = "address"
+    model = Address
+
+    def get_queryset(self):
+        return Address.objects.select_related("user", "location")
+
+
+class AddressCreateView(CreateView):
+    template_name = "monitoria/address_form.html"
+    form_class = None
+    success_url = reverse_lazy("monitoria:address_list")
+
+    def get_form_class(self):
+        from .forms import AddressForm
+        return AddressForm
+
+
+class AddressUpdateView(UpdateView):
+    template_name = "monitoria/address_form.html"
+    form_class = None
+    model = Address
+    success_url = reverse_lazy("monitoria:address_list")
+    context_object_name = "address"
+
+    def get_form_class(self):
+        from .forms import AddressForm
+        return AddressForm
+
+
 class UniformListView(ListView):
     template_name = "monitoria/uniform_list.html"
     context_object_name = "uniforms"

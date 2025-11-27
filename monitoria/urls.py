@@ -21,6 +21,10 @@ from .views import (
     UniformCreateView,
     UniformDetailView,
     UniformUpdateView,
+    AddressListView,
+    AddressCreateView,
+    AddressDetailView,
+    AddressUpdateView,
     teste,
 )
 
@@ -53,4 +57,8 @@ urlpatterns = [
     path("uniforms/new/", UniformCreateView.as_view(), name="uniform_create"),
     path("uniforms/<int:pk>/", UniformDetailView.as_view(), name="uniform_detail"),
     path("uniforms/<int:pk>/edit/", UniformUpdateView.as_view(), name="uniform_edit"),
+    path("addresses/", AddressListView.as_view(), name="address_list"),
+    path("addresses/new/", AddressCreateView.as_view(), name="address_create"),
+    path("addresses/<int:pk>/", AddressDetailView.as_view(), name="address_detail"),
+    path("addresses/<int:pk>/edit/", AddressUpdateView.as_view(), name="address_edit"),
 ]
