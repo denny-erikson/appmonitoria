@@ -1,4 +1,4 @@
-<nav class="w-64 bg-white border-r hidden md:flex flex-col">
+﻿<nav class="w-64 bg-white border-r hidden md:flex flex-col">
     <div class="p-4 font-bold text-xl text-gray-900">
         Monitoria
     </div>
@@ -20,7 +20,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/events/team/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
+                    <a href="{% url 'events:team_list' %}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20H4v-2a3 3 0 015.356-1.857M12 12a4 4 0 100-8 4 4 0 000 8zm0 0v1m0 4h.01"/></svg>
                         <span class="ml-2">Times</span>
                     </a>
@@ -35,7 +35,7 @@
         </div>
 
         <div>
-            <p class="px-2 mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Operação</p>
+            <p class="px-2 mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Operacao</p>
             <ul class="space-y-1">
                 <li>
                     <a href="{% url 'monitoria:payment_list' %}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
@@ -44,9 +44,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/monitoria/rating/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
+                    <a href="{% url 'monitoria:rating_list' %}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 17l-3.5 1.9.7-4.1L6 11.6l4.1-.6L12 7l1.9 4 4.1.6-3 3.2.7 4.1z"/></svg>
-                        <span class="ml-2">Avaliações</span>
+                        <span class="ml-2">Avaliacoes</span>
                     </a>
                 </li>
                 <li>
@@ -62,9 +62,9 @@
             <p class="px-2 mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Pessoas</p>
             <ul class="space-y-1">
                 <li>
-                    <a href="/admin/auth/user/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
+                    <a href="/admin/auth/user/" class="flex items-center px-3 py-2 rounded-lg hover-bg-gray-100">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.5 21h13a2 2 0 001.8-2.8l-2.3-5.4A3 3 0 0015.3 11H8.7a3 3 0 00-2.7 1.8L3.7 18.2A2 2 0 005.5 21z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
-                        <span class="ml-2">Usuários</span>
+                        <span class="ml-2">Usuarios</span>
                     </a>
                 </li>
                 <li>
@@ -82,7 +82,7 @@
                 <li>
                     <a href="/admin/monitoria/bankaccount/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h5M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
-                        <span class="ml-2">Contas bancárias</span>
+                        <span class="ml-2">Contas bancarias</span>
                     </a>
                 </li>
                 <li>
@@ -94,7 +94,7 @@
                 <li>
                     <a href="/admin/monitoria/address/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-6-5.686-6-10a6 6 0 1112 0c0 4.314-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>
-                        <span class="ml-2">Endereços</span>
+                        <span class="ml-2">Enderecos</span>
                     </a>
                 </li>
                 <li>
@@ -107,7 +107,7 @@
         </div>
 
         <div>
-            <p class="px-2 mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Catálogo</p>
+            <p class="px-2 mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Catalogo</p>
             <ul class="space-y-1">
                 <li>
                     <a href="/admin/events/product/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">

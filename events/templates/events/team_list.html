@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Times{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between flex-wrap gap-4">
+    <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Times</p>
+        <h1 class="text-2xl font-semibold text-gray-900">Gestão de times</h1>
+        <p class="text-sm text-gray-500">Veja status e ocupação por evento.</p>
+    </div>
+    <a href="{% url 'events:event_list' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        Eventos
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+            <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+                <tr>
+                    <th class="px-4 py-3 text-left">Time</th>
+                    <th class="px-4 py-3 text-left">Evento</th>
+                    <th class="px-4 py-3 text-left">Status</th>
+                    <th class="px-4 py-3 text-left">Disponibilidades</th>
+                    <th class="px-4 py-3 text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-gray-800">
+                {% for team in teams %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3">
+                        <div class="font-semibold text-gray-900">{{ team.name|default:"Sem nome" }}</div>
+                    </td>
+                    <td class="px-4 py-3 text-gray-700">{{ team.event|default:"—" }}</td>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {% if team.status %}bg-rose-100 text-rose-700{% else %}bg-emerald-100 text-emerald-700{% endif %}">
+                            {% if team.status %}Encerrado{% else %}Aberto{% endif %}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-gray-700">
+                        {{ team.availabilities.count }} / {{ team.max_availabilities }}
+                    </td>
+                    <td class="px-4 py-3 text-right">
+                        <a href="{% url 'events:team_detail' team.pk %}" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            Gerenciar
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">Nenhum time cadastrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

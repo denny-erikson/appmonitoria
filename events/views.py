@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import DetailView, ListView
+from django.urls import reverse
 
 from events.models import Availability, Cancellation, Event, Product, Resort, Team
 from events.serializers import (
@@ -112,6 +113,57 @@ class EventCreateView(View):
             team.save()
 
         return redirect("events:event_detail", pk=event.pk)
+
+
+class TeamListView(ListView):
+    template_name = "events/team_list.html"
+    context_object_name = "teams"
+
+    def get_queryset(self):
+        return Team.objects.select_related("event").prefetch_related("availabilities__profile").order_by(
+            "event__start_date", "name"
+        )
+
+
+class TeamDetailView(DetailView):
+    template_name = "events/team_detail.html"
+    context_object_name = "team"
+    model = Team
+
+    def get_queryset(self):
+        return Team.objects.select_related("event").prefetch_related(
+            "availabilities__profile", "availabilities__profile__user"
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["availabilities"] = self.object.availabilities.select_related(
+            "profile", "profile__user"
+        )
+        return context
+
+
+class TeamStatusUpdateView(View):
+    def post(self, request, pk):
+        team = get_object_or_404(Team, pk=pk)
+        action = request.POST.get("action")
+        if action == "close":
+            team.status = True
+        elif action == "open":
+            team.status = False
+        team.save()
+        return redirect("events:team_detail", pk=pk)
+
+
+class AvailabilityStatusUpdateView(View):
+    def post(self, request, pk):
+        availability = get_object_or_404(Availability, pk=pk)
+        if "status" in request.POST:
+            availability.status = request.POST.get("status") == "true"
+        if "summoned" in request.POST:
+            availability.summoned = request.POST.get("summoned") == "true"
+        availability.save()
+        return redirect("events:team_detail", pk=availability.team_id)
 
 
 class EventWizard(SessionWizardView):

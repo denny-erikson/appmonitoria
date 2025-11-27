@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Time{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between gap-4 mb-6">
+    <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Time</p>
+        <h1 class="text-2xl font-semibold text-gray-900">{{ team.name|default:"Time" }}</h1>
+        <p class="text-sm text-gray-500">Evento: {{ team.event|default:"—" }}</p>
+    </div>
+    <a href="{% url 'events:team_list' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        Voltar
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white shadow-sm rounded-xl border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Dados do time</h2>
+                    <p class="text-sm text-gray-500">Status e limite de vagas.</p>
+                </div>
+                <form method="post" action="{% url 'events:team_status_update' team.pk %}">
+                    {% csrf_token %}
+                    {% if team.status %}
+                        <input type="hidden" name="action" value="open">
+                        <button class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-50 text-emerald-700 text-sm font-semibold hover:bg-emerald-100">
+                            Reabrir time
+                        </button>
+                    {% else %}
+                        <input type="hidden" name="action" value="close">
+                        <button class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-50 text-rose-700 text-sm font-semibold hover:bg-rose-100">
+                            Fechar time
+                        </button>
+                    {% endif %}
+                </form>
+            </div>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Evento</dt>
+                    <dd class="text-base font-medium">{{ team.event|default:"—" }}</dd>
+                </div>
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Vagas</dt>
+                    <dd class="text-base font-semibold">{{ team.availabilities.count }} / {{ team.max_availabilities }}</dd>
+                </div>
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Status</dt>
+                    <dd>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {% if team.status %}bg-rose-100 text-rose-700{% else %}bg-emerald-100 text-emerald-700{% endif %}">
+                            {% if team.status %}Encerrado{% else %}Aberto{% endif %}
+                        </span>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="bg-white shadow-sm rounded-xl border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Disponibilidades</h2>
+                    <p class="text-sm text-gray-500">Gerencie status e convocações.</p>
+                </div>
+            </div>
+            {% if availabilities %}
+                <div class="space-y-3">
+                    {% for availability in availabilities %}
+                        <div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 shadow-sm">
+                            <div>
+                                <p class="text-gray-900 font-medium">{{ availability.profile.name }}</p>
+                                <p class="text-xs text-gray-500">Usuário: {{ availability.profile.user.username }}</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <form method="post" action="{% url 'events:availability_status_update' availability.pk %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="{% if availability.status %}false{% else %}true{% endif %}">
+                                    <button class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {% if availability.status %}bg-emerald-100 text-emerald-700{% else %}bg-gray-100 text-gray-600{% endif %} hover:shadow-sm">
+                                        {% if availability.status %}Disponível{% else %}Indisponível{% endif %}
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'events:availability_status_update' availability.pk %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="summoned" value="{% if availability.summoned %}false{% else %}true{% endif %}">
+                                    <button class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {% if availability.summoned %}bg-indigo-100 text-indigo-700{% else %}bg-gray-100 text-gray-600{% endif %} hover:shadow-sm">
+                                        Convocado: {% if availability.summoned %}Sim{% else %}Não{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-sm">Nenhuma disponibilidade cadastrada.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        <div class="bg-white shadow-sm rounded-xl border border-gray-100 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Ações rápidas</h3>
+            <div class="space-y-2 text-sm text-gray-700">
+                <a href="{% url 'events:event_detail' team.event.pk %}" class="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100">
+                    Ver evento
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </a>
+                <a href="{% url 'events:team_list' %}" class="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100">
+                    Voltar para times
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

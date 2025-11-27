@@ -1,14 +1,27 @@
 from rest_framework import viewsets
 from .models import (
-    Address, BankAccount, Category, Document, Location, Uniform, Payment
+    Address,
+    BankAccount,
+    Category,
+    Document,
+    Location,
+    Uniform,
+    Payment,
+    Rating,
 )
 from .serializers import (
-    AddressSerializer, BankAccountSerializer, CategorySerializer, DocumentsSerializer, LocationSerializer,
-    UniformSerializer, PaymentSerializer
+    AddressSerializer,
+    BankAccountSerializer,
+    CategorySerializer,
+    DocumentsSerializer,
+    LocationSerializer,
+    UniformSerializer,
+    PaymentSerializer,
 )
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, CreateView, UpdateView
+from django.urls import reverse_lazy
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
@@ -79,3 +92,39 @@ class PaymentStatusUpdateView(View):
         if form.is_valid():
             form.save()
         return redirect("monitoria:payment_detail", pk=pk)
+
+
+class RatingListView(ListView):
+    template_name = "monitoria/rating_list.html"
+    context_object_name = "ratings"
+
+    def get_queryset(self):
+        return Rating.objects.select_related("event", "profile", "profile__user", "created_by").order_by(
+            "-created_at"
+        )
+
+
+class RatingCreateView(CreateView):
+    template_name = "monitoria/rating_form.html"
+    form_class = None  # set in get_form_class to avoid circular import on load
+    success_url = reverse_lazy("monitoria:rating_list")
+
+    def get_form_class(self):
+        from .forms import RatingForm
+        return RatingForm
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+
+class RatingUpdateView(UpdateView):
+    template_name = "monitoria/rating_form.html"
+    form_class = None
+    model = Rating
+    success_url = reverse_lazy("monitoria:rating_list")
+    context_object_name = "rating"
+
+    def get_form_class(self):
+        from .forms import RatingForm
+        return RatingForm
