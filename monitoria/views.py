@@ -172,6 +172,42 @@ class AddressUpdateView(UpdateView):
         return AddressForm
 
 
+class LocationListView(ListView):
+    template_name = "monitoria/location_list.html"
+    context_object_name = "locations"
+
+    def get_queryset(self):
+        return Location.objects.all().order_by("country", "state", "city")
+
+
+class LocationDetailView(DetailView):
+    template_name = "monitoria/location_detail.html"
+    context_object_name = "location"
+    model = Location
+
+
+class LocationCreateView(CreateView):
+    template_name = "monitoria/location_form.html"
+    form_class = None
+    success_url = reverse_lazy("monitoria:location_list")
+
+    def get_form_class(self):
+        from .forms import LocationForm
+        return LocationForm
+
+
+class LocationUpdateView(UpdateView):
+    template_name = "monitoria/location_form.html"
+    form_class = None
+    model = Location
+    success_url = reverse_lazy("monitoria:location_list")
+    context_object_name = "location"
+
+    def get_form_class(self):
+        from .forms import LocationForm
+        return LocationForm
+
+
 class UniformListView(ListView):
     template_name = "monitoria/uniform_list.html"
     context_object_name = "uniforms"

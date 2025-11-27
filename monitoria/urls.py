@@ -25,6 +25,10 @@ from .views import (
     AddressCreateView,
     AddressDetailView,
     AddressUpdateView,
+    LocationListView,
+    LocationCreateView,
+    LocationDetailView,
+    LocationUpdateView,
     teste,
 )
 
@@ -61,4 +65,8 @@ urlpatterns = [
     path("addresses/new/", AddressCreateView.as_view(), name="address_create"),
     path("addresses/<int:pk>/", AddressDetailView.as_view(), name="address_detail"),
     path("addresses/<int:pk>/edit/", AddressUpdateView.as_view(), name="address_edit"),
+    path("locations/", LocationListView.as_view(), name="location_list"),
+    path("locations/new/", LocationCreateView.as_view(), name="location_create"),
+    path("locations/<int:pk>/", LocationDetailView.as_view(), name="location_detail"),
+    path("locations/<int:pk>/edit/", LocationUpdateView.as_view(), name="location_edit"),
 ]

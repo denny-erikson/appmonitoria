@@ -144,6 +144,23 @@ class AddressForm(forms.ModelForm):
         }
 
 
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        fields = ["country", "state", "city", "reimbursement_value"]
+        widgets = {
+            "country": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "state": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "city": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "reimbursement_value": forms.NumberInput(
+                attrs={
+                    "step": "0.01",
+                    "class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                }
+            ),
+        }
+
+
 class UniformForm(forms.ModelForm):
     class Meta:
         model = Uniform
