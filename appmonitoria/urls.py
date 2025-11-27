@@ -34,6 +34,7 @@ from monitoria.views import (
     UniformViewSet, PaymentViewSet
 )
 from users import web_urls as user_pages
+from .views import DashboardView
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -60,6 +61,7 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path("", DashboardView.as_view(), name="dashboard"),
     path('events/', include('events.urls')),
     path("monitoria/", include("monitoria.urls")),
     path("users/", include((user_pages.urlpatterns, "users"), namespace="userpages")),

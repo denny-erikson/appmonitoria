@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between flex-wrap gap-4">
+    <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Visão geral</p>
+        <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+        <p class="text-sm text-gray-500">Atalhos e métricas principais.</p>
+    </div>
+    <div class="flex items-center gap-2">
+        {% if show_admin %}
+        <a href="/admin/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4l2 2h6v12H4V4z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M9 8h6"/></svg>
+            Admin
+        </a>
+        {% endif %}
+        <a href="/api/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            API
+        </a>
+        <a href="/graphql/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2l7 7-7 7-7-7z"/></svg>
+            GraphQL
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+        <p class="text-xs uppercase tracking-wide text-gray-500">Usuários</p>
+        <p class="text-2xl font-semibold text-gray-900">{{ metrics.users }}</p>
+        <p class="text-sm text-gray-500">{{ metrics.profiles }} perfis</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+        <p class="text-xs uppercase tracking-wide text-gray-500">Eventos</p>
+        <p class="text-2xl font-semibold text-gray-900">{{ metrics.events }}</p>
+        <p class="text-sm text-gray-500">{{ metrics.teams_open }} times abertos</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+        <p class="text-xs uppercase tracking-wide text-gray-500">Pagamentos</p>
+        <p class="text-2xl font-semibold text-gray-900">R$ {{ metrics.payments_total }}</p>
+        <p class="text-sm text-gray-500">{{ metrics.availabilities_open }} disponibilidades ativas</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Próximos eventos</h2>
+            <a href="{% url 'events:event_list' %}" class="text-xs text-indigo-600 hover:text-indigo-800">Ver todos</a>
+        </div>
+        <div class="space-y-3 text-sm text-gray-700">
+            {% for ev in upcoming_events %}
+                <div class="p-3 rounded-lg border border-gray-100">
+                    <p class="font-semibold text-gray-900">{{ ev.name|default:"Evento" }}</p>
+                    <p class="text-xs text-gray-500">{{ ev.start_date }} {% if ev.end_date %}- {{ ev.end_date }}{% endif %}</p>
+                    <p class="text-xs text-gray-500">Resort: {{ ev.resort|default:"—" }}</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-500 text-sm">Nenhum evento cadastrado.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Pagamentos recentes</h2>
+            <a href="{% url 'monitoria:payment_list' %}" class="text-xs text-indigo-600 hover:text-indigo-800">Ver todos</a>
+        </div>
+        <div class="space-y-3 text-sm text-gray-700">
+            {% for pay in recent_payments %}
+                <div class="p-3 rounded-lg border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-gray-900">{{ pay.profile|default:"—" }}</p>
+                        <p class="text-xs text-gray-500">{{ pay.event|default:"—" }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-gray-900">R$ {{ pay.amount }}</p>
+                        <p class="text-xs text-gray-500">{{ pay.get_status_display }}</p>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-gray-500 text-sm">Nenhum pagamento registrado.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
