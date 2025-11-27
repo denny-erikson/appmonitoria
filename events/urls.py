@@ -5,6 +5,7 @@ from .views import (
     EventDetailView,
     EventListView,
     EventWizard,
+    EventPaymentReportView,
     TeamDetailView,
     TeamListView,
     TeamStatusUpdateView,
@@ -24,5 +25,6 @@ urlpatterns = [
         AvailabilityStatusUpdateView.as_view(),
         name="availability_status_update",
     ),
+    path("<int:pk>/payments/report/", EventPaymentReportView.as_view(), name="event_payment_report"),
     path('event_wizard/', EventWizard.as_view(), name='event_wizard'),
 ]

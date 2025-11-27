@@ -4,6 +4,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from decimal import Decimal, InvalidOperation
+from django.db.models import Sum
+
+from monitoria.models import Payment
+from weasyprint import HTML
 
 from events.models import Availability, Cancellation, Event, Product, Resort, Team
 from events.serializers import (
@@ -164,6 +171,76 @@ class AvailabilityStatusUpdateView(View):
             availability.summoned = request.POST.get("summoned") == "true"
         availability.save()
         return redirect("events:team_detail", pk=availability.team_id)
+
+
+class EventPaymentReportView(View):
+    template_name = "events/event_payments_report.html"
+
+    def get_filters(self, request):
+        status = request.GET.get("status") or ""
+        min_amount = request.GET.get("min_amount") or ""
+        max_amount = request.GET.get("max_amount") or ""
+        filters = {}
+        if status:
+            filters["status"] = status
+        # Safe decimal parsing
+        def parse_decimal(value):
+            try:
+                return Decimal(value)
+            except (InvalidOperation, TypeError):
+                return None
+        min_val = parse_decimal(min_amount)
+        max_val = parse_decimal(max_amount)
+        return filters, min_val, max_val
+
+    def get_queryset(self, event, filters, min_val, max_val):
+        qs = Payment.objects.filter(event=event).select_related("profile", "profile__user")
+        if "status" in filters:
+            qs = qs.filter(status=filters["status"])
+        if min_val is not None:
+            qs = qs.filter(amount__gte=min_val)
+        if max_val is not None:
+            qs = qs.filter(amount__lte=max_val)
+        return qs
+
+    def build_context(self, event, payments, filters, min_val, max_val):
+        agg = payments.aggregate(total=Sum("amount"))
+        total_amount = agg.get("total") or Decimal("0")
+        status_counts = {
+            "PAID": payments.filter(status="PAID").count(),
+            "PENDING": payments.filter(status="PENDING").count(),
+            "CANCELED": payments.filter(status="CANCELED").count(),
+        }
+        return {
+            "event": event,
+            "payments": payments,
+            "filters": {
+                "status": filters.get("status", ""),
+                "min_amount": min_val if min_val is not None else "",
+                "max_amount": max_val if max_val is not None else "",
+            },
+            "summary": {
+                "total_amount": total_amount,
+                "count": payments.count(),
+                "status_counts": status_counts,
+            },
+        }
+
+    def get(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        filters, min_val, max_val = self.get_filters(request)
+        payments = self.get_queryset(event, filters, min_val, max_val)
+        context = self.build_context(event, payments, filters, min_val, max_val)
+
+        if request.GET.get("format") == "pdf":
+            html_string = render_to_string(self.template_name, {**context, "export": True})
+            pdf = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+            response = HttpResponse(pdf, content_type="application/pdf")
+            filename = f"relatorio_pagamentos_evento_{event.pk}.pdf"
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            return response
+
+        return render(request, self.template_name, context)
 
 
 class EventWizard(SessionWizardView):
