@@ -6,6 +6,9 @@ from .views import (
     RatingCreateView,
     RatingListView,
     RatingUpdateView,
+    CategoryListView,
+    CategoryCreateView,
+    CategoryUpdateView,
     teste,
 )
 
@@ -23,4 +26,7 @@ urlpatterns = [
     path("ratings/", RatingListView.as_view(), name="rating_list"),
     path("ratings/new/", RatingCreateView.as_view(), name="rating_create"),
     path("ratings/<int:pk>/edit/", RatingUpdateView.as_view(), name="rating_edit"),
+    path("categories/", CategoryListView.as_view(), name="category_list"),
+    path("categories/new/", CategoryCreateView.as_view(), name="category_create"),
+    path("categories/<int:pk>/edit/", CategoryUpdateView.as_view(), name="category_edit"),
 ]

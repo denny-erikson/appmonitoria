@@ -128,3 +128,33 @@ class RatingUpdateView(UpdateView):
     def get_form_class(self):
         from .forms import RatingForm
         return RatingForm
+
+
+class CategoryListView(ListView):
+    template_name = "monitoria/category_list.html"
+    context_object_name = "categories"
+
+    def get_queryset(self):
+        return Category.objects.all().order_by("title")
+
+
+class CategoryCreateView(CreateView):
+    template_name = "monitoria/category_form.html"
+    form_class = None
+    success_url = reverse_lazy("monitoria:category_list")
+
+    def get_form_class(self):
+        from .forms import CategoryForm
+        return CategoryForm
+
+
+class CategoryUpdateView(UpdateView):
+    template_name = "monitoria/category_form.html"
+    form_class = None
+    model = Category
+    success_url = reverse_lazy("monitoria:category_list")
+    context_object_name = "category"
+
+    def get_form_class(self):
+        from .forms import CategoryForm
+        return CategoryForm
