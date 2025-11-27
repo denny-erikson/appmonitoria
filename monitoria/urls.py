@@ -9,6 +9,10 @@ from .views import (
     CategoryListView,
     CategoryCreateView,
     CategoryUpdateView,
+    DocumentListView,
+    DocumentCreateView,
+    DocumentDetailView,
+    DocumentUpdateView,
     teste,
 )
 
@@ -29,4 +33,8 @@ urlpatterns = [
     path("categories/", CategoryListView.as_view(), name="category_list"),
     path("categories/new/", CategoryCreateView.as_view(), name="category_create"),
     path("categories/<int:pk>/edit/", CategoryUpdateView.as_view(), name="category_edit"),
+    path("documents/", DocumentListView.as_view(), name="document_list"),
+    path("documents/new/", DocumentCreateView.as_view(), name="document_create"),
+    path("documents/<int:pk>/", DocumentDetailView.as_view(), name="document_detail"),
+    path("documents/<int:pk>/edit/", DocumentUpdateView.as_view(), name="document_edit"),
 ]

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Category, Payment, Rating
+from .models import Category, Payment, Rating, Document
 
 
 class PaymentStatusForm(forms.ModelForm):
@@ -69,6 +69,37 @@ class CategoryForm(forms.ModelForm):
             "percentage": forms.NumberInput(
                 attrs={
                     "step": "0.01",
+                    "class": "w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                }
+            ),
+        }
+
+
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = [
+            "user",
+            "rg_number",
+            "cpf_number",
+            "pis_number",
+            "cnpj_number",
+            "municipal_registration",
+            "work_regime",
+        ]
+        widgets = {
+            "user": forms.Select(
+                attrs={
+                    "class": "w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                }
+            ),
+            "rg_number": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "cpf_number": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "pis_number": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "cnpj_number": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "municipal_registration": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "work_regime": forms.Select(
+                attrs={
                     "class": "w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                 }
             ),

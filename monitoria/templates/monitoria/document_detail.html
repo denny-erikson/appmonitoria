@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Documento{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Documento</p>
+        <h1 class="text-2xl font-semibold text-gray-900">{{ document.user }}</h1>
+        <p class="text-sm text-gray-500">CPF: {{ document.cpf_number|default:"—" }} | CNPJ: {{ document.cnpj_number|default:"—" }}</p>
+    </div>
+    <div class="flex items-center gap-2">
+        <a href="{% url 'monitoria:document_edit' document.pk %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M4 13.5V20h6.5l7.732-7.732a1.5 1.5 0 000-2.122l-4.878-4.878a1.5 1.5 0 00-2.122 0L4 13.5z"/></svg>
+            Editar
+        </a>
+        <a href="{% url 'monitoria:document_list' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Voltar
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-100 p-5">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Identificação</h2>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+            <div class="p-3 rounded-lg bg-gray-50">
+                <dt class="text-xs uppercase tracking-wide text-gray-500">RG</dt>
+                <dd class="text-base font-medium">{{ document.rg_number|default:"—" }}</dd>
+            </div>
+            <div class="p-3 rounded-lg bg-gray-50">
+                <dt class="text-xs uppercase tracking-wide text-gray-500">CPF</dt>
+                <dd class="text-base font-medium">{{ document.cpf_number|default:"—" }}</dd>
+            </div>
+            <div class="p-3 rounded-lg bg-gray-50">
+                <dt class="text-xs uppercase tracking-wide text-gray-500">PIS</dt>
+                <dd class="text-base font-medium">{{ document.pis_number|default:"—" }}</dd>
+            </div>
+            <div class="p-3 rounded-lg bg-gray-50">
+                <dt class="text-xs uppercase tracking-wide text-gray-500">CNPJ</dt>
+                <dd class="text-base font-medium">{{ document.cnpj_number|default:"—" }}</dd>
+            </div>
+            <div class="p-3 rounded-lg bg-gray-50 sm:col-span-2">
+                <dt class="text-xs uppercase tracking-wide text-gray-500">Inscrição municipal</dt>
+                <dd class="text-base font-medium">{{ document.municipal_registration|default:"—" }}</dd>
+            </div>
+        </dl>
+    </div>
+
+    <div class="bg-white shadow-sm rounded-xl border border-gray-100 p-5">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Trabalho</h2>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+            <div class="p-3 rounded-lg bg-gray-50">
+                <dt class="text-xs uppercase tracking-wide text-gray-500">Regime</dt>
+                <dd class="text-base font-medium">{{ document.get_work_regime_display }}</dd>
+            </div>
+        </dl>
+    </div>
+</div>
+{% endblock %}

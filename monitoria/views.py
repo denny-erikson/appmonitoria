@@ -94,6 +94,45 @@ class PaymentStatusUpdateView(View):
         return redirect("monitoria:payment_detail", pk=pk)
 
 
+class DocumentListView(ListView):
+    template_name = "monitoria/document_list.html"
+    context_object_name = "documents"
+
+    def get_queryset(self):
+        return Document.objects.select_related("user").order_by("user__username")
+
+
+class DocumentDetailView(DetailView):
+    template_name = "monitoria/document_detail.html"
+    context_object_name = "document"
+    model = Document
+
+    def get_queryset(self):
+        return Document.objects.select_related("user")
+
+
+class DocumentCreateView(CreateView):
+    template_name = "monitoria/document_form.html"
+    form_class = None
+    success_url = reverse_lazy("monitoria:document_list")
+
+    def get_form_class(self):
+        from .forms import DocumentForm
+        return DocumentForm
+
+
+class DocumentUpdateView(UpdateView):
+    template_name = "monitoria/document_form.html"
+    form_class = None
+    model = Document
+    success_url = reverse_lazy("monitoria:document_list")
+    context_object_name = "document"
+
+    def get_form_class(self):
+        from .forms import DocumentForm
+        return DocumentForm
+
+
 class RatingListView(ListView):
     template_name = "monitoria/rating_list.html"
     context_object_name = "ratings"
