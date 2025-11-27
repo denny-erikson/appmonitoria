@@ -19,24 +19,14 @@
                         <span class="ml-2">Meu painel</span>
                     </a>
                 </li>
+                {% if user.is_staff %}
                 <li>
-                    <a href="{% url 'events:event_list' %}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
-                        <span class="ml-2">Eventos</span>
+                    <a href="/admin/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4l2 2h6v12H4V4z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M9 8h6"/></svg>
+                        <span class="ml-2">Admin</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'events:team_list' %}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20H4v-2a3 3 0 015.356-1.857M12 12a4 4 0 100-8 4 4 0 000 8zm0 0v1m0 4h.01"/></svg>
-                        <span class="ml-2">Times</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'events:team_list' %}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M7 8h10M5 5h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"/></svg>
-                        <span class="ml-2">Disponibilidades</span>
-                    </a>
-                </li>
+                {% endif %}
             </ul>
         </div>
 

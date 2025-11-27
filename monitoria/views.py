@@ -206,7 +206,11 @@ class MonitorDashboardView(LoginRequiredMixin, DetailView):
     context_object_name = "profile"
 
     def get_object(self, queryset=None):
-        return Profile.objects.select_related("user", "category").filter(user=self.request.user).first()
+        monitor_categories = {"m1", "m2", "m3"}
+        profile = Profile.objects.select_related("user", "category").filter(user=self.request.user).first()
+        if not profile or not profile.category or profile.category.title.lower() not in monitor_categories:
+            return None
+        return profile
 
     def get_context_data(self, **kwargs):
         from events.models import Availability
@@ -217,6 +221,7 @@ class MonitorDashboardView(LoginRequiredMixin, DetailView):
             context.update(
                 {
                     "missing_profile": True,
+                    "not_monitor": True,
                 }
             )
             return context

@@ -19,9 +19,9 @@
     </div>
 </div>
 
-{% if missing_profile %}
+{% if missing_profile or not_monitor %}
     <div class="bg-white rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
-        Nenhum perfil encontrado. Crie/complete seu perfil no admin ou peça acesso.
+        {% if not_monitor %}Acesso restrito: este painel é para monitores (categorias M1, M2, M3).{% else %}Nenhum perfil encontrado. Crie/complete seu perfil ou peça acesso.{% endif %}
     </div>
 {% else %}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

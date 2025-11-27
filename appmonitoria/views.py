@@ -1,5 +1,6 @@
 from django.views.generic import TemplateView
 from django.db.models import Sum, Count
+from django.shortcuts import redirect
 
 from users.models import CustomUser, Profile
 from events.models import Event, Team, Availability
@@ -8,6 +9,13 @@ from monitoria.models import Payment
 
 class DashboardView(TemplateView):
     template_name = "dashboard.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            profile = Profile.objects.select_related("category").filter(user=request.user).first()
+            if profile and profile.category and profile.category.title.lower() in {"m1", "m2", "m3"} and not request.user.is_staff:
+                return redirect("monitoria:monitor_dashboard")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
