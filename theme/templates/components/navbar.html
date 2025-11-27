@@ -1,0 +1,23 @@
+<header class="flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-white">
+    <div class="text-sm text-gray-500">
+        <span class="font-semibold text-gray-800">Monitoria</span> · Painel
+    </div>
+    <div class="flex items-center gap-4">
+        {% if user.is_authenticated %}
+            <div class="hidden md:flex flex-col text-right text-sm text-gray-700">
+                <span class="font-semibold text-gray-900">{{ user.username }}</span>
+                {% if user.profile_safe %}<span class="text-xs text-gray-500">{{ user.profile_safe.name }}</span>{% endif %}
+            </div>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200">
+                    Sair
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">
+                Entrar
+            </a>
+        {% endif %}
+    </div>
+</header>
