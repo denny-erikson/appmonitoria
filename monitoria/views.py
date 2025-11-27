@@ -22,6 +22,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
+from users.models import Profile
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
@@ -194,6 +198,57 @@ class LocationCreateView(CreateView):
     def get_form_class(self):
         from .forms import LocationForm
         return LocationForm
+
+
+class MonitorDashboardView(LoginRequiredMixin, DetailView):
+    template_name = "monitoria/monitor_dashboard.html"
+    model = Profile
+    context_object_name = "profile"
+
+    def get_object(self, queryset=None):
+        return Profile.objects.select_related("user", "category").filter(user=self.request.user).first()
+
+    def get_context_data(self, **kwargs):
+        from events.models import Availability
+        context = super().get_context_data(**kwargs)
+        profile = self.object
+
+        if not profile:
+            context.update(
+                {
+                    "missing_profile": True,
+                }
+            )
+            return context
+
+        availabilities = (
+            Availability.objects.filter(profile=profile)
+            .select_related("team", "team__event")
+            .order_by("team__event__start_date")
+        )
+        today = timezone.now().date()
+        upcoming_avail = availabilities.filter(team__event__start_date__gte=today, status=True).first()
+        payments = Payment.objects.filter(profile=profile).select_related("event").order_by("-id")
+        payments_total = payments.aggregate(total=Sum("amount")).get("total") or 0
+
+        document = Document.objects.filter(user=self.request.user).first()
+        bankaccount = BankAccount.objects.filter(user=self.request.user).first()
+        uniform = Uniform.objects.filter(user=self.request.user).first()
+        address = Address.objects.select_related("location").filter(user=self.request.user).first()
+
+        context.update(
+            {
+                "availabilities": availabilities[:5],
+                "upcoming_availability": upcoming_avail,
+                "payments": payments[:5],
+                "payments_total": payments_total,
+                "document": document,
+                "bankaccount": bankaccount,
+                "uniform": uniform,
+                "address": address,
+            }
+        )
+        return context
 
 
 class LocationUpdateView(UpdateView):

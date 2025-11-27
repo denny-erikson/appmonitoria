@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Monitor{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between flex-wrap gap-4">
+    <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Monitor</p>
+        <h1 class="text-2xl font-semibold text-gray-900">Meu painel</h1>
+        <p class="text-sm text-gray-500">Eventos, pagamentos e dados pessoais.</p>
+    </div>
+    <div class="flex items-center gap-2">
+        <a href="{% url 'monitoria:payment_list' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200">
+            Pagamentos
+        </a>
+        <a href="{% url 'events:event_list' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200">
+            Eventos
+        </a>
+    </div>
+</div>
+
+{% if missing_profile %}
+    <div class="bg-white rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
+        Nenhum perfil encontrado. Crie/complete seu perfil no admin ou peça acesso.
+    </div>
+{% else %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+        <p class="text-xs uppercase tracking-wide text-gray-500">Próximo evento</p>
+        {% if upcoming_availability %}
+            <p class="text-lg font-semibold text-gray-900">{{ upcoming_availability.team.event.name|default:"Evento" }}</p>
+            <p class="text-sm text-gray-500">{{ upcoming_availability.team.event.start_date }}{% if upcoming_availability.team.event.end_date %} - {{ upcoming_availability.team.event.end_date }}{% endif %}</p>
+        {% else %}
+            <p class="text-sm text-gray-500">Sem evento futuro.</p>
+        {% endif %}
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+        <p class="text-xs uppercase tracking-wide text-gray-500">Pagamentos</p>
+        <p class="text-lg font-semibold text-gray-900">R$ {{ payments_total }}</p>
+        <p class="text-sm text-gray-500">Últimos pagamentos no cartão ao lado.</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+        <p class="text-xs uppercase tracking-wide text-gray-500">Disponibilidades</p>
+        <p class="text-lg font-semibold text-gray-900">{{ availabilities|length }}</p>
+        <p class="text-sm text-gray-500">Incrições recentes.</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Meus eventos</h2>
+            <a href="{% url 'events:event_list' %}" class="text-xs text-indigo-600 hover:text-indigo-800">Ver todos</a>
+        </div>
+        <div class="space-y-3 text-sm text-gray-700">
+            {% for avail in availabilities %}
+                <div class="p-3 rounded-lg border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-gray-900">{{ avail.team.event.name|default:"Evento" }}</p>
+                        <p class="text-xs text-gray-500">{{ avail.team.event.start_date }}{% if avail.team.event.end_date %} - {{ avail.team.event.end_date }}{% endif %}</p>
+                    </div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {% if avail.status %}bg-emerald-100 text-emerald-700{% else %}bg-gray-100 text-gray-600{% endif %}">
+                        {% if avail.status %}Disponível{% else %}Indisponível{% endif %}
+                    </span>
+                </div>
+            {% empty %}
+                <p class="text-gray-500 text-sm">Nenhuma disponibilidade.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Pagamentos recentes</h2>
+            <a href="{% url 'monitoria:payment_list' %}" class="text-xs text-indigo-600 hover:text-indigo-800">Ver todos</a>
+        </div>
+        <div class="space-y-3 text-sm text-gray-700">
+            {% for pay in payments %}
+                <div class="p-3 rounded-lg border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-gray-900">{{ pay.event|default:"—" }}</p>
+                        <p class="text-xs text-gray-500">{{ pay.get_status_display }}</p>
+                    </div>
+                    <p class="font-semibold text-gray-900">R$ {{ pay.amount }}</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-500 text-sm">Nenhum pagamento.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="space-y-4">
+        <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">Perfil</h3>
+                <a href="{% url 'userpages:user_edit' profile.user.pk %}" class="text-xs text-indigo-600 hover:text-indigo-800">Editar</a>
+            </div>
+            <p class="text-sm text-gray-700">{{ profile.name }}</p>
+            <p class="text-xs text-gray-500">Categoria: {{ profile.category|default:"—" }}</p>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">Documentos</h3>
+                <a href="{% url 'monitoria:document_edit' document.pk %}" class="text-xs text-indigo-600 hover:text-indigo-800">{% if document %}Editar{% else %}Criar{% endif %}</a>
+            </div>
+            {% if document %}
+                <p class="text-sm text-gray-700">CPF: {{ document.cpf_number|default:"—" }}</p>
+                <p class="text-sm text-gray-700">CNPJ: {{ document.cnpj_number|default:"—" }}</p>
+                <p class="text-sm text-gray-700">Regime: {{ document.get_work_regime_display }}</p>
+            {% else %}
+                <p class="text-gray-500 text-sm">Nenhum documento cadastrado.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">Conta bancária</h3>
+                <a href="{% if bankaccount %}{% url 'monitoria:bankaccount_edit' bankaccount.pk %}{% else %}{% url 'monitoria:bankaccount_create' %}{% endif %}" class="text-xs text-indigo-600 hover:text-indigo-800">{% if bankaccount %}Editar{% else %}Criar{% endif %}</a>
+            </div>
+            {% if bankaccount %}
+                <p class="text-sm text-gray-700">{{ bankaccount.bank_name|default:"—" }}</p>
+                <p class="text-sm text-gray-700">Agência: {{ bankaccount.account_agency|default:"—" }}</p>
+                <p class="text-sm text-gray-700">Conta: {{ bankaccount.account_number|default:"—" }}</p>
+                <p class="text-sm text-gray-700">PIX: {{ bankaccount.key_pix|default:"—" }}</p>
+            {% else %}
+                <p class="text-gray-500 text-sm">Nenhuma conta cadastrada.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">Uniformes</h3>
+                <a href="{% if uniform %}{% url 'monitoria:uniform_edit' uniform.pk %}{% else %}{% url 'monitoria:uniform_create' %}{% endif %}" class="text-xs text-indigo-600 hover:text-indigo-800">{% if uniform %}Editar{% else %}Criar{% endif %}</a>
+            </div>
+            {% if uniform %}
+                <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                    <p>Camiseta: {{ uniform.t_shirt_size|default:"—" }}</p>
+                    <p>Calça: {{ uniform.pants_size|default:"—" }}</p>
+                    <p>Bermuda: {{ uniform.shorts_size|default:"—" }}</p>
+                    <p>Jaqueta: {{ uniform.jacket_size|default:"—" }}</p>
+                    <p>Festival: {{ uniform.festival_shirt_size|default:"—" }}</p>
+                    <p>Festa: {{ uniform.party_uniform_size|default:"—" }}</p>
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-sm">Nenhum uniforme cadastrado.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">Endereço / Local</h3>
+                <a href="{% if address %}{% url 'monitoria:address_edit' address.pk %}{% else %}{% url 'monitoria:address_create' %}{% endif %}" class="text-xs text-indigo-600 hover:text-indigo-800">{% if address %}Editar{% else %}Criar{% endif %}</a>
+            </div>
+            {% if address %}
+                <p class="text-sm text-gray-700">{{ address.address }} {{ address.number }}</p>
+                <p class="text-sm text-gray-700">{{ address.neighborhood|default:"—" }}</p>
+                <p class="text-sm text-gray-700">
+                    {% if address.location %}
+                        {{ address.location.city|default:"" }} {{ address.location.state|default:"" }} {{ address.location.country }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </p>
+            {% else %}
+                <p class="text-gray-500 text-sm">Nenhum endereço cadastrado.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

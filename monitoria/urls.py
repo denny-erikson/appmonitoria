@@ -29,6 +29,7 @@ from .views import (
     LocationCreateView,
     LocationDetailView,
     LocationUpdateView,
+    MonitorDashboardView,
     teste,
 )
 
@@ -69,4 +70,5 @@ urlpatterns = [
     path("locations/new/", LocationCreateView.as_view(), name="location_create"),
     path("locations/<int:pk>/", LocationDetailView.as_view(), name="location_detail"),
     path("locations/<int:pk>/edit/", LocationUpdateView.as_view(), name="location_edit"),
+    path("dashboard/", MonitorDashboardView.as_view(), name="monitor_dashboard"),
 ]
