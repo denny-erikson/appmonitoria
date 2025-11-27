@@ -10,6 +10,7 @@ from decimal import Decimal, InvalidOperation
 from django.db.models import Sum
 
 from monitoria.models import Payment
+from users.models import Profile
 from weasyprint import HTML
 
 from events.models import Availability, Cancellation, Event, Product, Resort, Team
@@ -147,6 +148,8 @@ class TeamDetailView(DetailView):
         context["availabilities"] = self.object.availabilities.select_related(
             "profile", "profile__user"
         )
+        from .forms import AvailabilityCreateForm
+        context["availability_form"] = AvailabilityCreateForm()
         return context
 
 
@@ -169,8 +172,54 @@ class AvailabilityStatusUpdateView(View):
             availability.status = request.POST.get("status") == "true"
         if "summoned" in request.POST:
             availability.summoned = request.POST.get("summoned") == "true"
+        reason = request.POST.get("cancel_reason")
+        clear_cancel = request.POST.get("clear_cancel")
+        if clear_cancel:
+            availability.cancellation = None
+        if reason:
+            cancellation = Cancellation.objects.create(reason=reason, availability=availability)
+            availability.cancellation = cancellation
+            availability.status = False
         availability.save()
         return redirect("events:team_detail", pk=availability.team_id)
+
+
+class TeamAvailabilityCreateView(View):
+    def post(self, request, pk):
+        team = get_object_or_404(Team, pk=pk)
+        from .forms import AvailabilityCreateForm
+
+        form = AvailabilityCreateForm(request.POST)
+        if form.is_valid():
+            form.save_with_team(team)
+        return redirect("events:team_detail", pk=pk)
+
+
+class SelfAvailabilityView(View):
+    """Monitor marca disponibilidade para o evento/time vinculado ao evento."""
+
+    def post(self, request, event_pk):
+        if not request.user.is_authenticated:
+            return redirect("events:event_detail", pk=event_pk)
+
+        try:
+            profile = Profile.objects.get(user=request.user)
+        except Profile.DoesNotExist:
+            return redirect("events:event_detail", pk=event_pk)
+
+        event = get_object_or_404(Event, pk=event_pk)
+        team = getattr(event, "team", None)
+        if not team or team.status:
+            return redirect("events:event_detail", pk=event_pk)
+
+        availability, created = Availability.objects.get_or_create(
+            team=team, profile=profile, defaults={"status": True}
+        )
+        if not created:
+            availability.status = True
+            availability.save()
+
+        return redirect("events:event_detail", pk=event_pk)
 
 
 class EventPaymentReportView(View):

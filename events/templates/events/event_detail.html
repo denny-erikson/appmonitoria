@@ -107,5 +107,13 @@
             </div>
         </div>
     </div>
+    {% if user.is_authenticated and event.team and not event.team.status %}
+    <form method="post" action="{% url 'events:self_availability' event.pk %}" class="inline-block">
+        {% csrf_token %}
+        <button class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700">
+            Marcar minha disponibilidade
+        </button>
+    </form>
+    {% endif %}
 </div>
 {% endblock %}
