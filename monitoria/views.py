@@ -6,6 +6,7 @@ from .serializers import (
     AddressSerializer, BankAccountSerializer, CategorySerializer, DocumentsSerializer, LocationSerializer,
     UniformSerializer, PaymentSerializer
 )
+from django.shortcuts import render
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
@@ -34,3 +35,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+def teste(request):
+    return render(request, "monitoria/teste.html")

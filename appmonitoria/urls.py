@@ -60,6 +60,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
     path('events/', include('events.urls')),
+    path("monitoria/", include("monitoria.urls")),
 ]
 
 if settings.DEBUG:

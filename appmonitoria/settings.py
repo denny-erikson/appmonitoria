@@ -47,6 +47,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'graphql_jwt',
+    'tailwind',
+    'theme',
+    "colorfield",
+    "admin_interface",
 ]
 
 REST_FRAMEWORK = {
@@ -202,3 +206,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "theme" / "static",  # Tailwind
+]
+TAILWIND_APP_NAME = 'theme'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
