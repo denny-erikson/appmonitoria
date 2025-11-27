@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Category, Payment, Rating, Document
+from .models import Category, Payment, Rating, Document, BankAccount
 
 
 class PaymentStatusForm(forms.ModelForm):
@@ -103,4 +103,21 @@ class DocumentForm(forms.ModelForm):
                     "class": "w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                 }
             ),
+        }
+
+
+class BankAccountForm(forms.ModelForm):
+    class Meta:
+        model = BankAccount
+        fields = ["user", "bank_name", "account_agency", "account_number", "key_pix"]
+        widgets = {
+            "user": forms.Select(
+                attrs={
+                    "class": "w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                }
+            ),
+            "bank_name": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "account_agency": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "account_number": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "key_pix": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
         }

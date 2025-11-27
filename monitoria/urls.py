@@ -13,6 +13,10 @@ from .views import (
     DocumentCreateView,
     DocumentDetailView,
     DocumentUpdateView,
+    BankAccountListView,
+    BankAccountCreateView,
+    BankAccountDetailView,
+    BankAccountUpdateView,
     teste,
 )
 
@@ -37,4 +41,8 @@ urlpatterns = [
     path("documents/new/", DocumentCreateView.as_view(), name="document_create"),
     path("documents/<int:pk>/", DocumentDetailView.as_view(), name="document_detail"),
     path("documents/<int:pk>/edit/", DocumentUpdateView.as_view(), name="document_edit"),
+    path("bankaccounts/", BankAccountListView.as_view(), name="bankaccount_list"),
+    path("bankaccounts/new/", BankAccountCreateView.as_view(), name="bankaccount_create"),
+    path("bankaccounts/<int:pk>/", BankAccountDetailView.as_view(), name="bankaccount_detail"),
+    path("bankaccounts/<int:pk>/edit/", BankAccountUpdateView.as_view(), name="bankaccount_edit"),
 ]

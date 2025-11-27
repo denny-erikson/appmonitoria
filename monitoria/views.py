@@ -94,6 +94,45 @@ class PaymentStatusUpdateView(View):
         return redirect("monitoria:payment_detail", pk=pk)
 
 
+class BankAccountListView(ListView):
+    template_name = "monitoria/bankaccount_list.html"
+    context_object_name = "bankaccounts"
+
+    def get_queryset(self):
+        return BankAccount.objects.select_related("user").order_by("bank_name")
+
+
+class BankAccountDetailView(DetailView):
+    template_name = "monitoria/bankaccount_detail.html"
+    context_object_name = "bankaccount"
+    model = BankAccount
+
+    def get_queryset(self):
+        return BankAccount.objects.select_related("user")
+
+
+class BankAccountCreateView(CreateView):
+    template_name = "monitoria/bankaccount_form.html"
+    form_class = None
+    success_url = reverse_lazy("monitoria:bankaccount_list")
+
+    def get_form_class(self):
+        from .forms import BankAccountForm
+        return BankAccountForm
+
+
+class BankAccountUpdateView(UpdateView):
+    template_name = "monitoria/bankaccount_form.html"
+    form_class = None
+    model = BankAccount
+    success_url = reverse_lazy("monitoria:bankaccount_list")
+    context_object_name = "bankaccount"
+
+    def get_form_class(self):
+        from .forms import BankAccountForm
+        return BankAccountForm
+
+
 class DocumentListView(ListView):
     template_name = "monitoria/document_list.html"
     context_object_name = "documents"
