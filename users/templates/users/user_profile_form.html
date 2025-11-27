@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Usuário{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Usuário + Perfil</p>
+        <h1 class="text-2xl font-semibold text-gray-900">
+            {% if user_obj %}Editar{% else %}Novo{% endif %} usuário
+        </h1>
+        <p class="text-sm text-gray-500">Dados de login, roles e perfil em um único formulário.</p>
+    </div>
+    <a href="{% url 'userpages:user_list' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        Voltar
+    </a>
+</div>
+
+<div class="bg-white shadow-sm rounded-xl p-6 border border-gray-100">
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-gray-900">Usuário</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {% for error in form.username.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+            </div>
+            <div>
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {% for error in form.email.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+            </div>
+            <div>
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                <p class="text-xs text-gray-500 mt-1">{% if user_obj %}Preencha para alterar a senha.{% else %}Senha obrigatória para novo usuário.{% endif %}</p>
+                {% for error in form.password.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="md:col-span-2">
+                {{ form.roles.label_tag }}
+                {{ form.roles }}
+                {% for error in form.roles.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+            </div>
+            </div>
+        </section>
+
+        <section class="space-y-3 border-t pt-4">
+            <h2 class="text-lg font-semibold text-gray-900">Perfil</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    {% for error in form.name.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+                </div>
+                <div>
+                    {{ form.category.label_tag }}
+                    {{ form.category }}
+                    {% for error in form.category.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+                </div>
+                <div>
+                    {{ form.gender.label_tag }}
+                    {{ form.gender }}
+                    {% for error in form.gender.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+                </div>
+                <div>
+                    {{ form.birth_sex.label_tag }}
+                    {{ form.birth_sex }}
+                    {% for error in form.birth_sex.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+                </div>
+                <div>
+                    {{ form.code_nr.label_tag }}
+                    {{ form.code_nr }}
+                    {% for error in form.code_nr.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+                </div>
+                <div>
+                    {{ form.code_senior.label_tag }}
+                    {{ form.code_senior }}
+                    {% for error in form.code_senior.errors %}<p class="text-xs text-red-600 mt-1">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+        </section>
+
+        {% if form.non_field_errors %}
+            <div class="text-sm text-red-600">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="flex justify-end">
+            <button class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Salvar
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

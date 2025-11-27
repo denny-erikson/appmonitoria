@@ -62,13 +62,13 @@
             <p class="px-2 mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Pessoas</p>
             <ul class="space-y-1">
                 <li>
-                    <a href="/admin/auth/user/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
+                    <a href="{% url 'userpages:user_list' %}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.5 21h13a2 2 0 001.8-2.8l-2.3-5.4A3 3 0 0015.3 11H8.7a3 3 0 00-2.7 1.8L3.7 18.2A2 2 0 005.5 21z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
-                        <span class="ml-2">Usuarios</span>
+                        <span class="ml-2">Usuários</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/users/profile/" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
+                    <a href="{% url 'userpages:user_list' %}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM4 21a8 8 0 1116 0"/></svg>
                         <span class="ml-2">Perfis</span>
                     </a>

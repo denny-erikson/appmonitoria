@@ -21,6 +21,13 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
     
+    @property
+    def profile_safe(self):
+        try:
+            return self.profile
+        except Exception:
+            return None
+    
 
 # Opções de gênero
 GENDERS = [

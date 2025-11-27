@@ -33,6 +33,7 @@ from monitoria.views import (
     AddressViewSet, BankAccountViewSet, DocumentsViewSet, LocationViewSet,
     UniformViewSet, PaymentViewSet
 )
+from users import web_urls as user_pages
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -61,6 +62,7 @@ urlpatterns = [
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
     path('events/', include('events.urls')),
     path("monitoria/", include("monitoria.urls")),
+    path("users/", include((user_pages.urlpatterns, "users"), namespace="userpages")),
 ]
 
 if settings.DEBUG:

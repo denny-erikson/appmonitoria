@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Usuário{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Usuário</p>
+        <h1 class="text-2xl font-semibold text-gray-900">{{ user_obj.username }}</h1>
+        <p class="text-sm text-gray-500">Email: {{ user_obj.email|default:"—" }}</p>
+    </div>
+    <div class="flex items-center gap-2">
+        <a href="{% url 'userpages:user_edit' user_obj.pk %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M4 13.5V20h6.5l7.732-7.732a1.5 1.5 0 000-2.122l-4.878-4.878a1.5 1.5 0 00-2.122 0L4 13.5z"/></svg>
+            Editar
+        </a>
+        <a href="{% url 'userpages:user_list' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Voltar
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white shadow-sm rounded-xl border border-gray-100 p-5">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Dados do usuário</h2>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Email</dt>
+                    <dd class="text-base font-medium">{{ user_obj.email|default:"—" }}</dd>
+                </div>
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Roles</dt>
+                    <dd class="text-base font-medium">
+                        {% for role in user_obj.roles.all %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">{{ role.name }}</span>
+                        {% empty %}
+                            <span class="text-xs text-gray-400">Sem roles</span>
+                        {% endfor %}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        {% if user_obj.profile %}
+        <div class="bg-white shadow-sm rounded-xl border border-gray-100 p-5">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Perfil</h2>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Nome</dt>
+                    <dd class="text-base font-medium">{{ user_obj.profile.name }}</dd>
+                </div>
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Categoria</dt>
+                    <dd class="text-base font-medium">{{ user_obj.profile.category|default:"—" }}</dd>
+                </div>
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Gênero</dt>
+                    <dd class="text-base font-medium">{{ user_obj.profile.gender|default:"—" }}</dd>
+                </div>
+                <div class="p-3 rounded-lg bg-gray-50">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Sexo de nascimento</dt>
+                    <dd class="text-base font-medium">{{ user_obj.profile.birth_sex|default:"—" }}</dd>
+                </div>
+                <div class="p-3 rounded-lg bg-gray-50 sm:col-span-2">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500">Códigos</dt>
+                    <dd class="text-base font-medium">NR: {{ user_obj.profile.code_nr|default:"—" }} | Senior: {{ user_obj.profile.code_senior|default:"—" }}</dd>
+                </div>
+            </dl>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="space-y-6">
+        <div class="bg-white shadow-sm rounded-xl border border-gray-100 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Ações</h3>
+            <div class="space-y-2 text-sm text-gray-700">
+                <a href="{% url 'userpages:user_list' %}" class="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100">
+                    Ver todos
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </a>
+                <a href="/admin/auth/user/{{ user_obj.pk }}/change/" class="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100">
+                    Abrir no admin
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </a>
+                {% if user_obj.profile %}
+                <a href="/admin/users/profile/{{ user_obj.profile.pk }}/change/" class="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100">
+                    Perfil no admin
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
