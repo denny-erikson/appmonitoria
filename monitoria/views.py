@@ -133,6 +133,45 @@ class BankAccountUpdateView(UpdateView):
         return BankAccountForm
 
 
+class UniformListView(ListView):
+    template_name = "monitoria/uniform_list.html"
+    context_object_name = "uniforms"
+
+    def get_queryset(self):
+        return Uniform.objects.select_related("user").order_by("user__username")
+
+
+class UniformDetailView(DetailView):
+    template_name = "monitoria/uniform_detail.html"
+    context_object_name = "uniform"
+    model = Uniform
+
+    def get_queryset(self):
+        return Uniform.objects.select_related("user")
+
+
+class UniformCreateView(CreateView):
+    template_name = "monitoria/uniform_form.html"
+    form_class = None
+    success_url = reverse_lazy("monitoria:uniform_list")
+
+    def get_form_class(self):
+        from .forms import UniformForm
+        return UniformForm
+
+
+class UniformUpdateView(UpdateView):
+    template_name = "monitoria/uniform_form.html"
+    form_class = None
+    model = Uniform
+    success_url = reverse_lazy("monitoria:uniform_list")
+    context_object_name = "uniform"
+
+    def get_form_class(self):
+        from .forms import UniformForm
+        return UniformForm
+
+
 class DocumentListView(ListView):
     template_name = "monitoria/document_list.html"
     context_object_name = "documents"

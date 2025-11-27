@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Category, Payment, Rating, Document, BankAccount
+from .models import Category, Payment, Rating, Document, BankAccount, Uniform
 
 
 class PaymentStatusForm(forms.ModelForm):
@@ -120,4 +120,31 @@ class BankAccountForm(forms.ModelForm):
             "account_agency": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
             "account_number": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
             "key_pix": forms.TextInput(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+        }
+
+
+class UniformForm(forms.ModelForm):
+    class Meta:
+        model = Uniform
+        fields = [
+            "user",
+            "t_shirt_size",
+            "pants_size",
+            "shorts_size",
+            "jacket_size",
+            "festival_shirt_size",
+            "party_uniform_size",
+        ]
+        widgets = {
+            "user": forms.Select(
+                attrs={
+                    "class": "w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                }
+            ),
+            "t_shirt_size": forms.Select(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "pants_size": forms.Select(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "shorts_size": forms.Select(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "jacket_size": forms.Select(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "festival_shirt_size": forms.Select(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
+            "party_uniform_size": forms.Select(attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}),
         }

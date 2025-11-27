@@ -17,6 +17,10 @@ from .views import (
     BankAccountCreateView,
     BankAccountDetailView,
     BankAccountUpdateView,
+    UniformListView,
+    UniformCreateView,
+    UniformDetailView,
+    UniformUpdateView,
     teste,
 )
 
@@ -45,4 +49,8 @@ urlpatterns = [
     path("bankaccounts/new/", BankAccountCreateView.as_view(), name="bankaccount_create"),
     path("bankaccounts/<int:pk>/", BankAccountDetailView.as_view(), name="bankaccount_detail"),
     path("bankaccounts/<int:pk>/edit/", BankAccountUpdateView.as_view(), name="bankaccount_edit"),
+    path("uniforms/", UniformListView.as_view(), name="uniform_list"),
+    path("uniforms/new/", UniformCreateView.as_view(), name="uniform_create"),
+    path("uniforms/<int:pk>/", UniformDetailView.as_view(), name="uniform_detail"),
+    path("uniforms/<int:pk>/edit/", UniformUpdateView.as_view(), name="uniform_edit"),
 ]

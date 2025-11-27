@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Uniformes{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between flex-wrap gap-4">
+    <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Pessoas</p>
+        <h1 class="text-2xl font-semibold text-gray-900">Uniformes</h1>
+        <p class="text-sm text-gray-500">Tamanhos por usuário.</p>
+    </div>
+    <a href="{% url 'monitoria:uniform_create' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium shadow hover:bg-indigo-700">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        Novo uniforme
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+            <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+                <tr>
+                    <th class="px-4 py-3 text-left">Usuário</th>
+                    <th class="px-4 py-3 text-left">Camiseta</th>
+                    <th class="px-4 py-3 text-left">Calça</th>
+                    <th class="px-4 py-3 text-left">Bermuda</th>
+                    <th class="px-4 py-3 text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-gray-800">
+                {% for uniform in uniforms %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-semibold text-gray-900">{{ uniform.user }}</td>
+                    <td class="px-4 py-3 text-gray-700">{{ uniform.t_shirt_size|default:"—" }}</td>
+                    <td class="px-4 py-3 text-gray-700">{{ uniform.pants_size|default:"—" }}</td>
+                    <td class="px-4 py-3 text-gray-700">{{ uniform.shorts_size|default:"—" }}</td>
+                    <td class="px-4 py-3 text-right">
+                        <a href="{% url 'monitoria:uniform_detail' uniform.pk %}" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            Detalhes
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">Nenhum uniforme cadastrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
