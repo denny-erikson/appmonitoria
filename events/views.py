@@ -217,9 +217,67 @@ class SelfAvailabilityView(View):
         )
         if not created:
             availability.status = True
-            availability.save()
+        availability.save()
 
         return redirect("events:event_detail", pk=event_pk)
+
+
+# Product pages
+class ProductListView(ListView):
+    template_name = "events/product_list.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        return Product.objects.prefetch_related("events").all().order_by("name")
+
+
+class ProductDetailView(DetailView):
+    template_name = "events/product_detail.html"
+    context_object_name = "product"
+    model = Product
+
+    def get_queryset(self):
+        return Product.objects.prefetch_related("events")
+
+
+class ProductCreateView(View):
+    template_name = "events/product_form.html"
+
+    def get(self, request):
+        from .forms import ProductForm
+
+        form = ProductForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        from .forms import ProductForm
+
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save()
+            return redirect("events:product_detail", pk=product.pk)
+        return render(request, self.template_name, {"form": form})
+
+
+class ProductUpdateView(View):
+    template_name = "events/product_form.html"
+
+    def get(self, request, pk):
+        from .forms import ProductForm
+
+        product = get_object_or_404(Product, pk=pk)
+        form = ProductForm(instance=product)
+        return render(request, self.template_name, {"form": form, "product": product})
+
+    def post(self, request, pk):
+        from .forms import ProductForm
+
+        product = get_object_or_404(Product, pk=pk)
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect("events:product_detail", pk=product.pk)
+        return render(request, self.template_name, {"form": form, "product": product})
 
 
 class EventPaymentReportView(View):

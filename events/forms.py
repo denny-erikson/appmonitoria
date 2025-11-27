@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event, Team, Availability, Cancellation
+from .models import Event, Team, Availability, Cancellation, Product
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -46,3 +46,17 @@ class AvailabilityCreateForm(forms.ModelForm):
             availability.status = False
             availability.save()
         return availability
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ["name", "events"]
+        widgets = {
+            "name": forms.TextInput(
+                attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}
+            ),
+            "events": forms.SelectMultiple(
+                attrs={"class": "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"}
+            ),
+        }

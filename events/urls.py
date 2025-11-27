@@ -11,6 +11,10 @@ from .views import (
     TeamListView,
     TeamStatusUpdateView,
     SelfAvailabilityView,
+    ProductListView,
+    ProductDetailView,
+    ProductCreateView,
+    ProductUpdateView,
 )
 
 app_name = "events"
@@ -30,5 +34,9 @@ urlpatterns = [
     ),
     path("<int:pk>/payments/report/", EventPaymentReportView.as_view(), name="event_payment_report"),
     path("<int:event_pk>/availability/self/", SelfAvailabilityView.as_view(), name="self_availability"),
+    path("products/", ProductListView.as_view(), name="product_list"),
+    path("products/new/", ProductCreateView.as_view(), name="product_create"),
+    path("products/<int:pk>/", ProductDetailView.as_view(), name="product_detail"),
+    path("products/<int:pk>/edit/", ProductUpdateView.as_view(), name="product_edit"),
     path('event_wizard/', EventWizard.as_view(), name='event_wizard'),
 ]
