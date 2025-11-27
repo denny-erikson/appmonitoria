@@ -607,6 +607,9 @@
   .pb-5 {
     padding-bottom: calc(var(--spacing) * 5);
   }
+  .pb-6 {
+    padding-bottom: calc(var(--spacing) * 6);
+  }
   .text-center {
     text-align: center;
   }
@@ -892,6 +895,11 @@
   .md\:block {
     @media (width >= 48rem) {
       display: block;
+    }
+  }
+  .md\:flex {
+    @media (width >= 48rem) {
+      display: flex;
     }
   }
   .md\:grid-cols-2 {
