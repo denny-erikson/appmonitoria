@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhe do Evento{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-semibold text-gray-800">{{ event.name|default:"Evento" }}</h1>
+        <p class="text-sm text-gray-500">Período: {% if event.start_date and event.end_date %}{{ event.start_date }} → {{ event.end_date }}{% else %}—{% endif %}</p>
+    </div>
+    <a href="{% url 'events:event_list' %}" class="text-blue-600 hover:text-blue-800 text-sm">Voltar para a lista</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white shadow rounded p-4">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Dados do evento</h2>
+        <dl class="space-y-2 text-gray-700">
+            <div class="flex justify-between">
+                <dt class="font-medium text-gray-600">Resort</dt>
+                <dd>{{ event.resort|default:"—" }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="font-medium text-gray-600">Diária</dt>
+                <dd>{% if event.daily %}R$ {{ event.daily }}{% else %}—{% endif %}</dd>
+            </div>
+        </dl>
+    </div>
+
+    <div class="bg-white shadow rounded p-4">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-800">Time</h2>
+            {% if not team %}
+                <span class="text-xs text-gray-500">Sem time associado</span>
+            {% endif %}
+        </div>
+        {% if team %}
+            <p class="text-gray-700 mb-2"><span class="font-medium">Nome:</span> {{ team.name|default:"Sem nome" }}</p>
+            <p class="text-gray-700 mb-4"><span class="font-medium">Status:</span> {% if team.status %}Encerrado{% else %}Aberto{% endif %}</p>
+
+            <h3 class="text-sm font-semibold text-gray-600 mb-2">Disponibilidades</h3>
+            {% if availabilities %}
+                <ul class="divide-y divide-gray-200">
+                    {% for availability in availabilities %}
+                        <li class="py-2 flex justify-between items-center">
+                            <div>
+                                <div class="text-gray-900">{{ availability.profile.name }}</div>
+                                <div class="text-xs text-gray-500">Convocado: {% if availability.summoned %}Sim{% else %}Não{% endif %}</div>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded {% if availability.status %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-600{% endif %}">
+                                {% if availability.status %}Disponível{% else %}Indisponível{% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 text-sm">Nenhuma disponibilidade cadastrada.</p>
+            {% endif %}
+        {% else %}
+            <p class="text-gray-500 text-sm">Associe um time para gerenciar disponibilidades.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
